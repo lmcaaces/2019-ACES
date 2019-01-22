@@ -23,15 +23,22 @@ public class Robot extends TimedRobot {
   private Joystick m_leftStick;
   private Joystick m_rightStick;
 
+  // There are three motors on each side (RIGHT/LEFT)
+  // in three positions (TOP, then bottom: FRONT/BACK)
+  // The color corrosponds to tape on the motor and control wire
+
+  private static final int MOTOR_RIGHT_TOP_BLU = 1;
+  private static final int MOTOR_LEFT_TOP_WHT = 4;
+  private static final int MOTOR_RIGHT_FRONT_GRN = 2;
+  private static final int MOTOR_LEFT_FRONT_YEL = 5;
+  private static final int MOTOR_RIGHT_BACK_RED = 0;
+  private static final int MOTOR_LEFT_BACK_BLK = 3;
+
   @Override
   public void robotInit() {
-    // TODO: Make constants
-    // Right: 1 (BLU); Left: 4 (WHT)
-    m_myRobot1 = new DifferentialDrive(new PWMVictorSPX(1), new PWMVictorSPX(4));
-    // Right: 2 (GRN); Left: 5 (YEL)
-    m_myRobot2 = new DifferentialDrive(new PWMVictorSPX(2), new PWMVictorSPX(5));
-    // Right: 0 (RED); Left: 3 (BLK)
-    m_myRobot3 = new DifferentialDrive(new PWMVictorSPX(0), new PWMVictorSPX(3));
+    m_myRobot1 = new DifferentialDrive(new PWMVictorSPX(MOTOR_RIGHT_TOP_BLU), new PWMVictorSPX(MOTOR_LEFT_TOP_WHT));
+    m_myRobot2 = new DifferentialDrive(new PWMVictorSPX(MOTOR_RIGHT_FRONT_GRN), new PWMVictorSPX(MOTOR_LEFT_FRONT_YEL));
+    m_myRobot3 = new DifferentialDrive(new PWMVictorSPX(MOTOR_RIGHT_BACK_RED), new PWMVictorSPX(MOTOR_LEFT_BACK_BLK));
     m_leftStick = new Joystick(0);
     m_rightStick = new Joystick(1);
   }
