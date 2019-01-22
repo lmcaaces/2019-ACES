@@ -17,9 +17,9 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
  * it contains the code necessary to operate a robot with tank drive.
  */
 public class Robot extends TimedRobot {
-  private DifferentialDrive m_myRobot1;
-  private DifferentialDrive m_myRobot2;
-  private DifferentialDrive m_myRobot3;
+  private DifferentialDrive m_myDriveTop;
+  private DifferentialDrive m_myDriveFront;
+  private DifferentialDrive m_myDriveBack;
   private Joystick m_leftStick;
   private Joystick m_rightStick;
 
@@ -36,9 +36,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    m_myRobot1 = new DifferentialDrive(new PWMVictorSPX(MOTOR_RIGHT_TOP_BLU), new PWMVictorSPX(MOTOR_LEFT_TOP_WHT));
-    m_myRobot2 = new DifferentialDrive(new PWMVictorSPX(MOTOR_RIGHT_FRONT_GRN), new PWMVictorSPX(MOTOR_LEFT_FRONT_YEL));
-    m_myRobot3 = new DifferentialDrive(new PWMVictorSPX(MOTOR_RIGHT_BACK_RED), new PWMVictorSPX(MOTOR_LEFT_BACK_BLK));
+    m_myDriveTop = new DifferentialDrive(new PWMVictorSPX(MOTOR_RIGHT_TOP_BLU), new PWMVictorSPX(MOTOR_LEFT_TOP_WHT));
+    m_myDriveFront = new DifferentialDrive(new PWMVictorSPX(MOTOR_RIGHT_FRONT_GRN), new PWMVictorSPX(MOTOR_LEFT_FRONT_YEL));
+    m_myDriveBack = new DifferentialDrive(new PWMVictorSPX(MOTOR_RIGHT_BACK_RED), new PWMVictorSPX(MOTOR_LEFT_BACK_BLK));
     m_leftStick = new Joystick(0);
     m_rightStick = new Joystick(1);
   }
@@ -48,8 +48,8 @@ public class Robot extends TimedRobot {
     double left, right;
     left = m_leftStick.getY();
     right = m_rightStick.getY();
-    m_myRobot1.tankDrive(left, right);
-    m_myRobot2.tankDrive(left, right);
-    m_myRobot3.tankDrive(left, right);
+    m_myDriveTop.tankDrive(left, right);
+    m_myDriveFront.tankDrive(left, right);
+    m_myDriveBack.tankDrive(left, right);
   }
 }
