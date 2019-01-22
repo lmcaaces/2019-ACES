@@ -27,12 +27,12 @@ public class Robot extends TimedRobot {
   // in three positions (TOP, then bottom: FRONT/BACK)
   // The color corrosponds to tape on the motor and control wire
 
-  private static final int MOTOR_RIGHT_TOP_BLU = 1;
-  private static final int MOTOR_LEFT_TOP_WHT = 4;
-  private static final int MOTOR_RIGHT_FRONT_GRN = 2;
-  private static final int MOTOR_LEFT_FRONT_YEL = 5;
   private static final int MOTOR_RIGHT_BACK_RED = 0;
+  private static final int MOTOR_RIGHT_TOP_BLU = 1;
+  private static final int MOTOR_RIGHT_FRONT_GRN = 2;
   private static final int MOTOR_LEFT_BACK_BLK = 3;
+  private static final int MOTOR_LEFT_TOP_WHT = 4;
+  private static final int MOTOR_LEFT_FRONT_YEL = 5;
 
   @Override
   public void robotInit() {
