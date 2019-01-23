@@ -9,6 +9,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PWMVictorSPX;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
@@ -17,15 +18,21 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
  * it contains the code necessary to operate a robot with tank drive.
  */
 public class Robot extends TimedRobot {
-  private DifferentialDrive m_myDriveTop;
-  private DifferentialDrive m_myDriveFront;
-  private DifferentialDrive m_myDriveBack;
+  private DifferentialDrive m_drive;
+  private SpeedControllerGroup m_right;
+  private SpeedControllerGroup m_left;
+
   private Joystick m_leftStick;
   private Joystick m_rightStick;
 
+  boolean TANK_DRIVE = false;
+
+  // Used for joystick positions
+  private double leftX, leftY, rightY;
+
   // There are three motors on each side (RIGHT/LEFT)
   // in three positions (TOP, then bottom: FRONT/BACK)
-  // The color corrosponds to tape on the motor and control wire
+  // The color corresponds to tape on the motor and control wire
 
   private static final int MOTOR_RIGHT_BACK_RED = 0;
   private static final int MOTOR_RIGHT_TOP_BLU = 1;
@@ -36,20 +43,40 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    m_myDriveTop = new DifferentialDrive(new PWMVictorSPX(MOTOR_RIGHT_TOP_BLU), new PWMVictorSPX(MOTOR_LEFT_TOP_WHT));
-    m_myDriveFront = new DifferentialDrive(new PWMVictorSPX(MOTOR_RIGHT_FRONT_GRN), new PWMVictorSPX(MOTOR_LEFT_FRONT_YEL));
-    m_myDriveBack = new DifferentialDrive(new PWMVictorSPX(MOTOR_RIGHT_BACK_RED), new PWMVictorSPX(MOTOR_LEFT_BACK_BLK));
+    m_right = new SpeedControllerGroup(
+      new PWMVictorSPX(MOTOR_RIGHT_TOP_BLU),
+      new PWMVictorSPX(MOTOR_RIGHT_FRONT_GRN),
+      new PWMVictorSPX(MOTOR_RIGHT_BACK_RED)
+      );
+    m_left = new SpeedControllerGroup(
+      new PWMVictorSPX(MOTOR_LEFT_TOP_WHT),
+      new PWMVictorSPX(MOTOR_LEFT_FRONT_YEL),
+      new PWMVictorSPX(MOTOR_LEFT_BACK_BLK)
+      );
+    m_drive = new DifferentialDrive(m_right, m_left);
     m_leftStick = new Joystick(0);
     m_rightStick = new Joystick(1);
   }
 
   @Override
   public void teleopPeriodic() {
-    double left, right;
-    left = m_leftStick.getY();
-    right = m_rightStick.getY();
-    m_myDriveTop.tankDrive(left, right);
-    m_myDriveFront.tankDrive(left, right);
-    m_myDriveBack.tankDrive(left, right);
+
+    // Get Joystick positions
+    leftY = m_leftStick.getY();
+    leftX = m_leftStick.getX();
+    rightY = m_rightStick.getY();
+//    rightY = m_leftStick.getRawAxis(5);
+// TODO: Check number, set constant
+// BETTER: Create XboxGamePad class that gets all the values I need, so I can
+//         use it for multiple JoySticks.
+
+    if (TANK_DRIVE) {
+      // NOTE: This uses leftStick and rightStick
+      // QUESTION: How to make it use the right joystick controller on leftStick?
+      m_drive.tankDrive(leftY, rightY);
+    } else {
+      // NOTE: This uses only the leftStick
+      m_drive.arcadeDrive(leftY, leftX);
+    }
   }
 }
