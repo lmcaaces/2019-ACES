@@ -8,7 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PWMVictorSPX;
+import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -44,14 +44,14 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     m_right = new SpeedControllerGroup(
-      new PWMVictorSPX(MOTOR_RIGHT_TOP_BLU),
-      new PWMVictorSPX(MOTOR_RIGHT_FRONT_GRN),
-      new PWMVictorSPX(MOTOR_RIGHT_BACK_RED)
+      new Spark(MOTOR_RIGHT_TOP_BLU),
+      new Spark(MOTOR_RIGHT_FRONT_GRN),
+      new Spark(MOTOR_RIGHT_BACK_RED)
       );
     m_left = new SpeedControllerGroup(
-      new PWMVictorSPX(MOTOR_LEFT_TOP_WHT),
-      new PWMVictorSPX(MOTOR_LEFT_FRONT_YEL),
-      new PWMVictorSPX(MOTOR_LEFT_BACK_BLK)
+      new Spark(MOTOR_LEFT_TOP_WHT),
+      new Spark(MOTOR_LEFT_FRONT_YEL),
+      new Spark(MOTOR_LEFT_BACK_BLK)
       );
     m_drive = new DifferentialDrive(m_right, m_left);
     m_leftStick = new Joystick(0);
