@@ -7,11 +7,13 @@
 
 package frc.team6957;
 
+import java.lang.Math;
+
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 /**
  * Team 6957 - Basic Robot Control
@@ -21,13 +23,20 @@ public class Robot extends TimedRobot {
   private SpeedControllerGroup m_right_speedgroup;
   private SpeedControllerGroup m_left_speedgroup;
 
+  private Spark m_arm_large;
+  private Spark m_arm_small;
+
   private Joystick m_control_driver;
   private Joystick m_control_operator;
 
+  // TODO Have this be settable on the dashboard
   boolean TANK_DRIVE = false;
 
   // Used for joystick positions
   private double leftX, leftY, rightY;
+
+  // Deadband for ARM control
+  private static final double DEADBAND = 0.2;
 
   // For XBox Joystick
 
@@ -38,9 +47,13 @@ public class Robot extends TimedRobot {
   private static final int RX_AXIS = 4;
   private static final int RY_AXIS = 5;
 
-  // There are three motors on each side (RIGHT/LEFT)
+  // There are PWM Control mapping constants
+  
+  // Drive Train Motors
+  // three motors on each side (RIGHT/LEFT)
   // in three positions (TOP, then bottom: FRONT/BACK)
   // The color corresponds to tape on the motor and control wire
+  // NOTE: Each on of these motors has there own SPARK controller
 
   private static final int MOTOR_RIGHT_BACK_RED = 0;
   private static final int MOTOR_RIGHT_TOP_BLU = 1;
@@ -48,6 +61,10 @@ public class Robot extends TimedRobot {
   private static final int MOTOR_LEFT_BACK_BLK = 3;
   private static final int MOTOR_LEFT_TOP_WHT = 4;
   private static final int MOTOR_LEFT_FRONT_YEL = 5;
+
+  // Controll Arm Motors
+  private static final int MOTOR_ARM_LARGE = 6;
+  private static final int MOTOR_ARM_SMALL = 7;
 
   @Override
   public void robotInit() {
@@ -64,18 +81,23 @@ public class Robot extends TimedRobot {
     m_drive = new DifferentialDrive(m_right_speedgroup, m_left_speedgroup);
     m_control_driver = new Joystick(0);
     m_control_operator = new Joystick(1);
+
+    m_arm_large = new Spark(MOTOR_ARM_LARGE);
+    m_arm_small = new Spark(MOTOR_ARM_SMALL);
   }
 
   @Override
   public void teleopPeriodic() {
+    // TODO Make sections routines and pass in the joystick?
+
+    //
+    // Driver Control
+    //
 
     // Get Joystick positions
     leftY = m_control_driver.getY();
     leftX = m_control_driver.getX();
     rightY = m_control_driver.getRawAxis(RY_AXIS);
-//
-// BETTER: Create XboxGamePad class that gets all the values I need, so I can
-//         use it for multiple JoySticks.
 
     if (TANK_DRIVE) {
       // NOTE: This uses leftStick and rightStick
@@ -84,6 +106,27 @@ public class Robot extends TimedRobot {
     } else {
       // NOTE: This uses only the leftStick
       m_drive.arcadeDrive(leftY, leftX);
+    }
+
+    //
+    // Operator Control
+    //
+
+    // Get Joystick positions
+    leftY = m_control_operator.getY();
+    rightY = m_control_operator.getRawAxis(RY_AXIS);
+
+    // TODO Should I be using another class to controll this (with deadband, etc?)
+    System.out.println("ARMS");
+    if (Math.abs(leftY)>DEADBAND) {
+      m_arm_large.set(leftY);
+      System.out.print("Large ");
+      System.out.println(leftY);
+    }
+    if (Math.abs(rightY)>DEADBAND) {
+      m_arm_small.set(rightY);
+      System.out.print("Small ");
+      System.out.println(rightY);
     }
   }
 }
