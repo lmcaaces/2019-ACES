@@ -68,6 +68,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
+    // Should most of this should be in teleopInit?
     m_right_speedgroup = new SpeedControllerGroup(
       new Spark(MOTOR_RIGHT_TOP_BLU),
       new Spark(MOTOR_RIGHT_FRONT_GRN),
@@ -114,24 +115,39 @@ public class Robot extends TimedRobot {
     //
 
     // Get Joystick positions
-    leftY = m_control_operator.getY();
-    rightY = m_control_operator.getRawAxis(RY_AXIS);
+    leftY = Deadband(m_control_operator.getY());
+    rightY = Deadband(m_control_operator.getRawAxis(RY_AXIS));
 
     // TODO Should I be using another class to controll this (with deadband, etc?)
     System.out.println("ARMS");
-    if (Math.abs(leftY)>DEADBAND) {
-      m_arm_large.set(leftY);
-      System.out.print("Large ");
-      System.out.println(leftY);
-    } else {
-      m_arm_large.set (0);
-    }
-    if (Math.abs(rightY)>DEADBAND) {
-      m_arm_small.set(rightY);
-      System.out.print("Small ");
-      System.out.println(rightY);
-    } else {
-      m_arm_small.set (0);
-    }
+
+    m_arm_large.set(leftY);
+    System.out.print("Large ");
+    System.out.println(leftY);
+
+    m_arm_small.set(rightY);
+    System.out.print("Small ");
+    System.out.println(rightY);
   }
+
+  // HELPER FUNCTIONS
+
+  /** Deadband with constant percent */
+  double Deadband(double value) {
+    return Deadband(value, DEADBAND);
+  }
+
+	/** Deadband percent passed in */
+	double Deadband(double value, double def_deadband) {
+		/* Upper deadband */
+		if (value >= +def_deadband) 
+			return value;
+		
+		/* Lower deadband */
+		if (value <= -def_deadband)
+			return value;
+		
+		/* Outside deadband */
+		return 0;
+	}
 }
