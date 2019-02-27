@@ -122,11 +122,15 @@ public class Robot extends TimedRobot {
       m_arm_large.set(leftY);
       System.out.print("Large ");
       System.out.println(leftY);
+    } else {
+      m_arm_large.set (0);
     }
     if (Math.abs(rightY)>DEADBAND) {
       m_arm_small.set(rightY);
       System.out.print("Small ");
       System.out.println(rightY);
+    } else {
+      m_arm_small.set (0);
     }
   }
 }
