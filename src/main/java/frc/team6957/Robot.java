@@ -83,6 +83,7 @@ public class Robot extends TimedRobot {
     m_control_operator = new Joystick(1);
 
     m_arm_large = new Spark(MOTOR_ARM_LARGE);
+    m_arm_large.setInverted(true);
     m_arm_small = new Spark(MOTOR_ARM_SMALL);
   }
 
