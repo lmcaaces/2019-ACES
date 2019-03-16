@@ -62,3 +62,18 @@ jar {
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
 }
+
+// Create Clean ZIP archive of current repository
+
+def getISODate() {
+    def date = new Date()
+    return date.format('yyyyMMdd')
+}
+
+// NOTE: This goes into 'build/distributions/''
+// TODO: Generate Name in function, have cleanZip task that removes it!
+//       if the file exists, it is not overwritten.
+task zip(type:Zip) {
+  from(fileTree(dir: './', excludes: ['build/**', 'bin/**', '.gradle/**']))
+  archiveName getISODate() + "-ACES.zip"
+}
