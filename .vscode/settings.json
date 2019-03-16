@@ -8,7 +8,13 @@
     "**/.DS_Store": true,
     "bin/": true,
     ".classpath": true,
-    ".project": true
+    ".project": true,
+    ".gradle": true,
+    ".vscode": true,
+    ".wpilib": true,
+    "**/.project": true,
+    "**/.settings": true,
+    "**/.factorypath": true,
   },
   "cSpell.enabled": true
 }
