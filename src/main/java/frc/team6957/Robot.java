@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 
 /**
  * Team 6957 - Basic Robot Control
@@ -26,6 +28,9 @@ public class Robot extends TimedRobot {
   private Spark m_arm_large;
   private Spark m_arm_small;
 
+  private WPI_VictorSPX m_hand_left;
+  private WPI_VictorSPX m_hand_right;
+
   private Joystick m_control_driver;
   private Joystick m_control_operator;
 
@@ -34,6 +39,9 @@ public class Robot extends TimedRobot {
 
   // Used for joystick positions
   private double leftX, leftY, rightY;
+
+  // Value sent to control hands
+  private double hand;
 
   // Deadband for ARM control
   private static final double DEADBAND = 0.2;
@@ -62,9 +70,13 @@ public class Robot extends TimedRobot {
   private static final int MOTOR_LEFT_TOP_WHT = 4;
   private static final int MOTOR_LEFT_FRONT_YEL = 5;
 
-  // Controll Arm Motors
+  // Control Arm Motors
   private static final int MOTOR_ARM_LARGE = 6;
   private static final int MOTOR_ARM_SMALL = 7;
+
+  // CAN Controller ID Mappings
+  private static final int HAND_LEFT_CAN_ID = 1;
+  private static final int HAND_RIGHT_CAN_ID = 2;
 
   @Override
   public void robotInit() {
@@ -83,9 +95,15 @@ public class Robot extends TimedRobot {
     m_control_driver = new Joystick(0);
     m_control_operator = new Joystick(1);
 
+    // Operator Arm Control
     m_arm_large = new Spark(MOTOR_ARM_LARGE);
     m_arm_large.setInverted(true);
     m_arm_small = new Spark(MOTOR_ARM_SMALL);
+
+    // Operator Hand Control
+    // TODO: Can I indicate status if these are NULL?
+    WPI_VictorSPX m_hand_left = new WPI_VictorSPX(HAND_LEFT_CAN_ID);
+    WPI_VictorSPX m_hand_right = new WPI_VictorSPX(HAND_RIGHT_CAN_ID);
   }
 
   @Override
@@ -118,6 +136,10 @@ public class Robot extends TimedRobot {
     leftY = Deadband(m_control_operator.getY());
     rightY = Deadband(m_control_operator.getRawAxis(RY_AXIS));
 
+    // Hand control - Use the Operator Left and Right trigger.   They return
+    // 0..1.   Blend them together for a value.
+    hand = m_control_operator.getRawAxis(L_TRIGGER) - m_control_operator.getRawAxis(R_TRIGGER);
+
     // TODO Should I be using another class to controll this (with deadband, etc?)
     System.out.println("ARMS");
 
@@ -128,6 +150,16 @@ public class Robot extends TimedRobot {
     m_arm_small.set(rightY);
     System.out.print("Small ");
     System.out.println(rightY);
+
+    // Operator Control Hands
+    // NOTE: Deadband is set and handled by the VictorSPX directly
+    //       See instructions in user's guide for setting.
+
+    if ((m_hand_left != null) && (m_hand_right != null)) {
+      // If these are controllers are not present, don't die
+      m_hand_left.set(ControlMode.PercentOutput, hand);
+      m_hand_right.set(ControlMode.PercentOutput, -hand);
+    }
   }
 
   // HELPER FUNCTIONS
