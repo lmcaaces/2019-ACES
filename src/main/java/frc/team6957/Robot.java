@@ -48,7 +48,7 @@ public class Robot extends TimedRobot {
   private static final int RY_AXIS = 5;
 
   // There are PWM Control mapping constants
-  
+
   // Drive Train Motors
   // three motors on each side (RIGHT/LEFT)
   // in three positions (TOP, then bottom: FRONT/BACK)
@@ -137,17 +137,17 @@ public class Robot extends TimedRobot {
     return Deadband(value, DEADBAND);
   }
 
-	/** Deadband percent passed in */
-	double Deadband(double value, double def_deadband) {
-		/* Upper deadband */
-		if (value >= +def_deadband) 
-			return value;
-		
-		/* Lower deadband */
-		if (value <= -def_deadband)
-			return value;
-		
-		/* Outside deadband */
-		return 0;
-	}
+  /** Deadband percent passed in */
+  double Deadband(double value, double def_deadband) {
+    /* Upper deadband */
+    if (value >= +def_deadband)
+      return value;
+
+    /* Lower deadband */
+    if (value <= -def_deadband)
+      return value;
+
+    /* Outside deadband */
+    return 0;
+  }
 }
