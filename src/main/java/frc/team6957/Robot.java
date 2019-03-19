@@ -74,9 +74,11 @@ public class Robot extends TimedRobot {
   private static final int MOTOR_ARM_LARGE = 6;
   private static final int MOTOR_ARM_SMALL = 7;
 
-  // CAN Controller ID Mappings
-  private static final int HAND_LEFT_CAN_ID = 1;
-  private static final int HAND_RIGHT_CAN_ID = 2;
+  // CAN Controller IDs
+  private static final int PDP_CAN_ID = 1;  // Power Distribution Panel
+  private static final int PCM_CAN_ID = 2;  // Pneumatic Control Module
+  private static final int HAND_LEFT_CAN_ID = 10;
+  private static final int HAND_RIGHT_CAN_ID = 11;
 
   @Override
   public void robotInit() {
