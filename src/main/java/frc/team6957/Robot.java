@@ -120,7 +120,7 @@ public class Robot extends TimedRobot {
     if (cameraserver != null) {
       cameraserver.startAutomaticCapture();
     } else {
-      System.out.println("No Camera Found.");
+      System.out.println("TEAM6957: No Camera Found.");
     }
   }
 
