@@ -110,6 +110,10 @@ public class Robot extends TimedRobot {
     // TODO: Can I indicate status if these are NULL?
     WPI_VictorSPX m_hand_left = new WPI_VictorSPX(HAND_LEFT_CAN_ID);
     WPI_VictorSPX m_hand_right = new WPI_VictorSPX(HAND_RIGHT_CAN_ID);
+    if (m_hand_left == null)
+      System.out.println("TEAM6957: No Hand (Left) Controller");
+    if (m_hand_right == null)
+      System.out.println("TEAM6957: No Hand (Right) Controller");
   
     // Turn on USB Camera (if present)
     cameraserver = CameraServer.getInstance();
@@ -153,17 +157,6 @@ public class Robot extends TimedRobot {
     // Hand control - Use the Operator Left and Right trigger.   They return
     // 0..1.   Blend them together for a value.
     hand = m_control_operator.getRawAxis(L_TRIGGER) - m_control_operator.getRawAxis(R_TRIGGER);
-
-    // TODO Should I be using another class to controll this (with deadband, etc?)
-    System.out.println("ARMS");
-
-    m_arm_large.set(leftY);
-    System.out.print("Large ");
-    System.out.println(leftY);
-
-    m_arm_small.set(rightY);
-    System.out.print("Small ");
-    System.out.println(rightY);
 
     // Operator Control Hands
     // NOTE: Deadband is set and handled by the VictorSPX directly
