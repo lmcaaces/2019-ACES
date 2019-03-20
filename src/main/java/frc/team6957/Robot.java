@@ -9,6 +9,7 @@ package frc.team6957;
 
 import java.lang.Math;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Spark;
@@ -80,6 +81,9 @@ public class Robot extends TimedRobot {
   private static final int HAND_LEFT_CAN_ID = 10;
   private static final int HAND_RIGHT_CAN_ID = 11;
 
+  // USB Camera Server
+  private CameraServer cameraserver;
+  
   @Override
   public void robotInit() {
     // Should most of this should be in teleopInit?
@@ -106,6 +110,14 @@ public class Robot extends TimedRobot {
     // TODO: Can I indicate status if these are NULL?
     WPI_VictorSPX m_hand_left = new WPI_VictorSPX(HAND_LEFT_CAN_ID);
     WPI_VictorSPX m_hand_right = new WPI_VictorSPX(HAND_RIGHT_CAN_ID);
+  
+    // Turn on USB Camera (if present)
+    cameraserver = CameraServer.getInstance();
+    if (cameraserver != null) {
+      cameraserver.startAutomaticCapture();
+    } else {
+      System.out.println("No Camera Found.");
+    }
   }
 
   @Override
