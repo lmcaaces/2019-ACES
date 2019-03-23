@@ -64,20 +64,22 @@ public class Robot extends TimedRobot {
   // The color corresponds to tape on the motor and control wire
   // NOTE: Each on of these motors has there own SPARK controller
 
-  private static final int MOTOR_RIGHT_BACK_RED = 0;
-  private static final int MOTOR_RIGHT_TOP_BLU = 1;
-  private static final int MOTOR_RIGHT_FRONT_GRN = 2;
-  private static final int MOTOR_LEFT_BACK_BLK = 3;
-  private static final int MOTOR_LEFT_TOP_WHT = 4;
-  private static final int MOTOR_LEFT_FRONT_YEL = 5;
+  private static final int MOTOR_RIGHT_BACK_RED = 0;   // Red
+  private static final int MOTOR_RIGHT_FRONT_GRN = 1;  // Green
+  private static final int MOTOR_LEFT_BACK_BLU = 2;    // Blue
+  private static final int MOTOR_LEFT_FRONT_ORG = 3;   // Orange
 
   // Control Arm Motors
-  private static final int MOTOR_ARM_LARGE = 6;
-  private static final int MOTOR_ARM_SMALL = 7;
+  private static final int MOTOR_ARM_LARGE_VIO = 4;    // Violet(Purple)
+  private static final int MOTOR_ARM_SMALL_WHT = 5;    // White
 
   // CAN Controller IDs
+
+  // Reference, not used
   private static final int PDP_CAN_ID = 1;  // Power Distribution Panel
   private static final int PCM_CAN_ID = 2;  // Pneumatic Control Module
+
+  // Hand Motors
   private static final int HAND_LEFT_CAN_ID = 10;
   private static final int HAND_RIGHT_CAN_ID = 11;
 
@@ -88,23 +90,21 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Should most of this should be in teleopInit?
     m_right_speedgroup = new SpeedControllerGroup(
-      new Spark(MOTOR_RIGHT_TOP_BLU),
       new Spark(MOTOR_RIGHT_FRONT_GRN),
       new Spark(MOTOR_RIGHT_BACK_RED)
       );
     m_left_speedgroup = new SpeedControllerGroup(
-      new Spark(MOTOR_LEFT_TOP_WHT),
-      new Spark(MOTOR_LEFT_FRONT_YEL),
-      new Spark(MOTOR_LEFT_BACK_BLK)
+      new Spark(MOTOR_LEFT_FRONT_ORG),
+      new Spark(MOTOR_LEFT_BACK_BLU)
       );
     m_drive = new DifferentialDrive(m_right_speedgroup, m_left_speedgroup);
     m_control_driver = new Joystick(0);
     m_control_operator = new Joystick(1);
 
     // Operator Arm Control
-    m_arm_large = new Spark(MOTOR_ARM_LARGE);
+    m_arm_large = new Spark(MOTOR_ARM_LARGE_VIO);
     m_arm_large.setInverted(true);
-    m_arm_small = new Spark(MOTOR_ARM_SMALL);
+    m_arm_small = new Spark(MOTOR_ARM_SMALL_WHT);
 
     // Operator Hand Control
     // TODO: Can I indicate status if these are NULL?
