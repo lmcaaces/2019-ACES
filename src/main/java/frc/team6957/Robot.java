@@ -7,16 +7,12 @@
 
 package frc.team6957;
 
-import java.lang.Math;
-
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
-import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-import com.ctre.phoenix.motorcontrol.ControlMode;
 
 /**
  * Team 6957 - Basic Robot Control
@@ -29,8 +25,8 @@ public class Robot extends TimedRobot {
   private Spark m_arm_large;
   private Spark m_arm_small;
 
-  private WPI_VictorSPX m_hand_left;
-  private WPI_VictorSPX m_hand_right;
+  private Spark m_hand_left;
+  private Spark m_hand_right;
 
   private Joystick m_control_driver;
   private Joystick m_control_operator;
@@ -45,7 +41,8 @@ public class Robot extends TimedRobot {
   private double hand;
 
   // Deadband for ARM control
-  private static final double DEADBAND = 0.2;
+  private static final double DEADBAND_ARMS = 0.05;
+  private static final double DEADBAND_HANDS = 0.05;
 
   // For XBox Joystick
 
@@ -73,15 +70,14 @@ public class Robot extends TimedRobot {
   private static final int MOTOR_ARM_LARGE_VIO = 4;    // Violet(Purple)
   private static final int MOTOR_ARM_SMALL_WHT = 5;    // White
 
+  // Hand (Intake) Motors
+  private static final int HAND_LEFT_YEL = 6;          // Yellow
+  private static final int HAND_RIGHT_BRN = 7;         // Brown
+
   // CAN Controller IDs
-
   // Reference, not used
-  private static final int PDP_CAN_ID = 1;  // Power Distribution Panel
-  private static final int PCM_CAN_ID = 2;  // Pneumatic Control Module
-
-  // Hand Motors
-  private static final int HAND_LEFT_CAN_ID = 10;
-  private static final int HAND_RIGHT_CAN_ID = 11;
+  // private static final int PDP_CAN_ID = 1;  // Power Distribution Panel
+  // private static final int PCM_CAN_ID = 2;  // Pneumatic Control Module
 
   // USB Camera Server
   private CameraServer cameraserver;
@@ -107,13 +103,9 @@ public class Robot extends TimedRobot {
     m_arm_small = new Spark(MOTOR_ARM_SMALL_WHT);
 
     // Operator Hand Control
-    // TODO: Can I indicate status if these are NULL?
-    WPI_VictorSPX m_hand_left = new WPI_VictorSPX(HAND_LEFT_CAN_ID);
-    WPI_VictorSPX m_hand_right = new WPI_VictorSPX(HAND_RIGHT_CAN_ID);
-    if (m_hand_left == null)
-      System.out.println("TEAM6957: No Hand (Left) Controller");
-    if (m_hand_right == null)
-      System.out.println("TEAM6957: No Hand (Right) Controller");
+    m_hand_left = new Spark(HAND_LEFT_YEL);
+    m_hand_right = new Spark(HAND_RIGHT_BRN);
+    m_hand_right.setInverted(true);
   
     // Turn on USB Camera (if present)
     cameraserver = CameraServer.getInstance();
@@ -126,8 +118,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    // TODO Make sections routines and pass in the joystick?
-
     //
     // Driver Control
     //
@@ -151,8 +141,8 @@ public class Robot extends TimedRobot {
     //
 
     // Get Joystick positions and send to arm motors
-    leftY = Deadband(m_control_operator.getY());
-    rightY = Deadband(m_control_operator.getRawAxis(RY_AXIS));
+    leftY = Deadband(m_control_operator.getY(), DEADBAND_ARMS);
+    rightY = Deadband(m_control_operator.getRawAxis(RY_AXIS), DEADBAND_ARMS);
 
     m_arm_large.set(leftY);
     m_arm_small.set(rightY);
@@ -160,33 +150,32 @@ public class Robot extends TimedRobot {
     // Hand control - Use the Operator Left and Right trigger.   They return
     // 0..1.   Blend them together for a value.
     hand = m_control_operator.getRawAxis(L_TRIGGER) - m_control_operator.getRawAxis(R_TRIGGER);
+    hand = Deadband(hand, DEADBAND_HANDS);
 
     // Operator Control Hands
-    // NOTE: Deadband is set and handled by the VictorSPX directly
-    //       See instructions in user's guide for setting.
 
     if ((m_hand_left != null) && (m_hand_right != null)) {
       // If these are controllers are not present, don't die
-      m_hand_left.set(ControlMode.PercentOutput, hand);
-      m_hand_right.set(ControlMode.PercentOutput, -hand);
+      m_hand_left.set(hand);
+      m_hand_right.set(hand);
     }
   }
 
-  // HELPER FUNCTIONS
+  // HELPER FUNCTION(S)
 
-  /** Deadband with constant percent */
-  double Deadband(double value) {
-    return Deadband(value, DEADBAND);
-  }
-
-  /** Deadband percent passed in */
-  double Deadband(double value, double def_deadband) {
+  /** Deadband with the given percent.
+   * 
+   * @param value The floating point input value (-1.0 .... 1.0, range not checked)
+   * @param deadband The deadband.
+   * @return The value, except values between -deadband to +deadband are returned as 0.0.
+   */
+  double Deadband(double value, double deadband) {
     /* Upper deadband */
-    if (value >= +def_deadband)
+    if (value >= +deadband)
       return value;
 
     /* Lower deadband */
-    if (value <= -def_deadband)
+    if (value <= -deadband)
       return value;
 
     /* Outside deadband */
