@@ -56,8 +56,6 @@ public class Robot extends TimedRobot {
   // There are PWM Control mapping constants
 
   // Drive Train Motors
-  // three motors on each side (RIGHT/LEFT)
-  // in three positions (TOP, then bottom: FRONT/BACK)
   // The color corresponds to tape on the motor and control wire
   // NOTE: Each on of these motors has there own SPARK controller
 
@@ -125,7 +123,7 @@ public class Robot extends TimedRobot {
     // Get Joystick positions
     leftY = m_control_driver.getY();
     leftX = m_control_driver.getX();
-    rightY = m_control_driver.getRawAxis(RY_AXIS);
+    rightY = m_control_driver.getRawAxis(RY_AXIS);   // Only for Tank mode.
 
     if (TANK_DRIVE) {
       // NOTE: This uses leftStick and rightStick
