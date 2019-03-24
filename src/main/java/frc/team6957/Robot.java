@@ -150,13 +150,9 @@ public class Robot extends TimedRobot {
     hand = m_control_operator.getRawAxis(L_TRIGGER) - m_control_operator.getRawAxis(R_TRIGGER);
     hand = Deadband(hand, DEADBAND_HANDS);
 
-    // Operator Control Hands
-
-    if ((m_hand_left != null) && (m_hand_right != null)) {
-      // If these are controllers are not present, don't die
-      m_hand_left.set(hand);
-      m_hand_right.set(hand);
-    }
+    // Operator Control Hands (Grab/Release balls)
+    m_hand_left.set(hand);
+    m_hand_right.set(hand);
   }
 
   // HELPER FUNCTION(S)
