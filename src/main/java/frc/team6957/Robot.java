@@ -9,6 +9,8 @@ package frc.team6957;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
@@ -24,14 +26,17 @@ public class Robot extends TimedRobot {
   private static final double DEADBAND_ARMS = 0.05;
   private static final double DEADBAND_HANDS = 0.05;
 
-  // For XBox Joystick
-
+  // For XBox Joystick (Axis)
   private static final int LX_AXIS = 0;
   private static final int LY_AXIS = 1;
   private static final int L_TRIGGER = 2;
   private static final int R_TRIGGER = 3;
   private static final int RX_AXIS = 4;
   private static final int RY_AXIS = 5;
+
+  // XBox Joystick (Buttons) - Just ones I need
+  private static final int BUTTON_A = 0;
+  private static final int BUTTON_B = 1;
 
   // There are PWM Control mapping constants
 
@@ -55,9 +60,19 @@ public class Robot extends TimedRobot {
   // CAN Controller IDs
   // Reference, not used
   // private static final int PDP_CAN_ID = 1;  // Power Distribution Panel
-  // private static final int PCM_CAN_ID = 2;  // Pneumatic Control Module
+  private static final int PCM_CAN_ID = 2;  // Pneumatic Control Module
+
+  // PCM Controller IDs
+  // Tyler = Operator; Curtis(sp?) = Drive
+  // Tyler wants B to push the solenoid out, and A to pull it back in (SHOULD THAT BE AUTOMATIC?  TIMED AFTER RELEASE?)
+
+  private static int SOL_FORWARD_PCM_ID = 0;       
+  private static int SOL_REVERSE_PCM_ID = 1;
 
   // *** Variables ***
+
+  // TODO Have this be settable on the dashboard
+  private boolean TANK_DRIVE = false;
 
   private DifferentialDrive m_drive;
   private SpeedControllerGroup m_right_speedgroup;
@@ -72,14 +87,18 @@ public class Robot extends TimedRobot {
   private Joystick m_control_driver;
   private Joystick m_control_operator;
 
-  // TODO Have this be settable on the dashboard
-  boolean TANK_DRIVE = false;
-
   // Used for joystick positions
   private double leftX, leftY, rightY;
 
   // Value sent to control hands
   private double hand;
+
+  // Push hatch covers
+  private Compressor compressor;
+  private DoubleSolenoid solenoid;
+
+  private boolean op_button_a;
+  private boolean op_button_b;
 
   // USB Camera Server
   private CameraServer cameraserver;
@@ -108,7 +127,19 @@ public class Robot extends TimedRobot {
     m_hand_left = new Spark(HAND_LEFT_YEL);
     m_hand_right = new Spark(HAND_RIGHT_BRN);
     m_hand_right.setInverted(true);
-  
+
+    // Set up compressor.  Have it controlled with PCM Pressure Switch
+    compressor = new Compressor(PCM_CAN_ID);
+    if (compressor != null) {
+      // PCM Automatically turns on compressor when 'Pressure SW' is closed
+      compressor.setClosedLoopControl(true);
+    } else {
+      System.out.println("TEAM6957: Can't setup Compressor/PCM");
+    }
+
+    // DOES THIS NEED TO BE GAURDED?  Can it be null?
+    solenoid = new DoubleSolenoid(SOL_FORWARD_PCM_ID, SOL_REVERSE_PCM_ID);
+
     // Turn on USB Camera (if present)
     cameraserver = CameraServer.getInstance();
     if (cameraserver != null) {
@@ -157,6 +188,21 @@ public class Robot extends TimedRobot {
     // Operator Control Hands (Grab/Release balls)
     m_hand_left.set(hand);
     m_hand_right.set(hand);
+
+    // Buttons to control solenoid to push hatch covers
+    op_button_a = m_control_driver.getRawButton(BUTTON_A);
+    op_button_b = m_control_driver.getRawButton(BUTTON_B);
+
+    if (op_button_b) {
+      // PUSH has priority
+      solenoid.set(DoubleSolenoid.Value.kForward);
+    } else if (op_button_a) {
+      // Otherwise, see if we should pull.
+      solenoid.set(DoubleSolenoid.Value.kReverse);
+    } else {
+      // Otherwise, stop pressure to solenoid.
+      solenoid.set(DoubleSolenoid.Value.kOff);
+    }
   }
 
   // HELPER FUNCTION(S)
