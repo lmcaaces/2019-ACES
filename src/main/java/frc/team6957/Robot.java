@@ -18,27 +18,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
  * Team 6957 - Basic Robot Control
  */
 public class Robot extends TimedRobot {
-  private DifferentialDrive m_drive;
-  private SpeedControllerGroup m_right_speedgroup;
-  private SpeedControllerGroup m_left_speedgroup;
-
-  private Spark m_arm_large;
-  private Spark m_arm_small;
-
-  private Spark m_hand_left;
-  private Spark m_hand_right;
-
-  private Joystick m_control_driver;
-  private Joystick m_control_operator;
-
-  // TODO Have this be settable on the dashboard
-  boolean TANK_DRIVE = false;
-
-  // Used for joystick positions
-  private double leftX, leftY, rightY;
-
-  // Value sent to control hands
-  private double hand;
+  // *** Constants ***
 
   // Deadband for ARM control
   private static final double DEADBAND_ARMS = 0.05;
@@ -76,6 +56,30 @@ public class Robot extends TimedRobot {
   // Reference, not used
   // private static final int PDP_CAN_ID = 1;  // Power Distribution Panel
   // private static final int PCM_CAN_ID = 2;  // Pneumatic Control Module
+
+  // *** Variables ***
+
+  private DifferentialDrive m_drive;
+  private SpeedControllerGroup m_right_speedgroup;
+  private SpeedControllerGroup m_left_speedgroup;
+
+  private Spark m_arm_large;
+  private Spark m_arm_small;
+
+  private Spark m_hand_left;
+  private Spark m_hand_right;
+
+  private Joystick m_control_driver;
+  private Joystick m_control_operator;
+
+  // TODO Have this be settable on the dashboard
+  boolean TANK_DRIVE = false;
+
+  // Used for joystick positions
+  private double leftX, leftY, rightY;
+
+  // Value sent to control hands
+  private double hand;
 
   // USB Camera Server
   private CameraServer cameraserver;
