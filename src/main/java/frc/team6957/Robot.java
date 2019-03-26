@@ -60,7 +60,7 @@ public class Robot extends TimedRobot {
   // CAN Controller IDs
   // Reference, not used
   // private static final int PDP_CAN_ID = 1;  // Power Distribution Panel
-  private static final int PCM_CAN_ID = 2;  // Pneumatic Control Module
+  private static final int PCM_CAN_ID = 0;  // Pneumatic Control Module  (Assumed in Solenoid code!)
 
   // PCM Controller IDs
   // Tyler = Operator; Curtis(sp?) = Drive
