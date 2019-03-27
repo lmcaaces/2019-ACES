@@ -129,7 +129,7 @@ public class Robot extends TimedRobot {
     // DOES THIS NEED TO BE GAURDED?  Can it be null?
     solenoid = new DoubleSolenoid(SOL_FORWARD_PCM_ID, SOL_REVERSE_PCM_ID);
     if (solenoid != null) {
-      System.out.println("TEAM6957: Solenoid Instantiated.");
+      System.out.println("TEAM6957: Solenoid NOT Instantiated.");
     }
 
     // Turn on USB Camera (if present)
