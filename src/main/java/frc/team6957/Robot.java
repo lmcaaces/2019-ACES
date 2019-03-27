@@ -35,8 +35,8 @@ public class Robot extends TimedRobot {
   private static final int RY_AXIS = 5;
 
   // XBox Joystick (Buttons) - Just ones I need
-  private static final int BUTTON_A = 0;
-  private static final int BUTTON_B = 1;
+  private static final int BUTTON_A = 1;
+  private static final int BUTTON_B = 2;
 
   // There are PWM Control mapping constants
 
