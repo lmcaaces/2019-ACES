@@ -83,8 +83,8 @@ public class Robot extends TimedRobot {
   private Spark m_hand_left;
   private Spark m_hand_right;
 
-  private Joystick m_control_driver;
-  private Joystick m_control_operator;
+  private Joystick joystick_driver;
+  private Joystick joystick_operator;
 
   // Used for joystick positions
   private double leftX, leftY, rightY;
@@ -113,8 +113,8 @@ public class Robot extends TimedRobot {
       new Spark(MOTOR_LEFT_BACK_BLU)
       );
     m_drive = new DifferentialDrive(m_right_speedgroup, m_left_speedgroup);
-    m_control_driver = new Joystick(0);
-    m_control_operator = new Joystick(1);
+    joystick_driver = new Joystick(0);
+    joystick_operator = new Joystick(1);
 
     // Operator Arm Control
     m_arm_large = new Spark(MOTOR_ARM_LARGE_VIO);
@@ -145,9 +145,9 @@ public class Robot extends TimedRobot {
     //
 
     // Get Joystick positions
-    leftY = m_control_driver.getY();
-    leftX = m_control_driver.getX();
-    rightY = m_control_driver.getRawAxis(RY_AXIS);   // Only for Tank mode.
+    leftY = joystick_driver.getY();
+    leftX = joystick_driver.getX();
+    rightY = joystick_driver.getRawAxis(RY_AXIS);   // Only for Tank mode.
 
     if (TANK_DRIVE) {
       // NOTE: This uses leftStick and rightStick
@@ -163,15 +163,15 @@ public class Robot extends TimedRobot {
     //
 
     // Get Joystick positions and send to arm motors
-    leftY = Deadband(m_control_operator.getY(), DEADBAND_ARMS);
-    rightY = Deadband(m_control_operator.getRawAxis(RY_AXIS), DEADBAND_ARMS);
+    leftY = Deadband(joystick_operator.getY(), DEADBAND_ARMS);
+    rightY = Deadband(joystick_operator.getRawAxis(RY_AXIS), DEADBAND_ARMS);
 
     m_arm_large.set(leftY);
     m_arm_small.set(rightY);
 
     // Hand control - Use the Operator Left and Right trigger.   They return
     // 0..1.   Blend them together for a value.
-    hand = m_control_operator.getRawAxis(L_TRIGGER) - m_control_operator.getRawAxis(R_TRIGGER);
+    hand = joystick_operator.getRawAxis(L_TRIGGER) - joystick_operator.getRawAxis(R_TRIGGER);
     hand = Deadband(hand, DEADBAND_HANDS);
 
     // Operator Control Hands (Grab/Release balls)
@@ -179,8 +179,8 @@ public class Robot extends TimedRobot {
     m_hand_right.set(hand);
 
     // Buttons to control solenoid to push hatch covers
-    op_button_a = m_control_driver.getRawButton(BUTTON_A);
-    op_button_b = m_control_driver.getRawButton(BUTTON_B);
+    op_button_a = joystick_driver.getRawButton(BUTTON_A);
+    op_button_b = joystick_driver.getRawButton(BUTTON_B);
 
     if (op_button_b) {
       // PUSH has priority
