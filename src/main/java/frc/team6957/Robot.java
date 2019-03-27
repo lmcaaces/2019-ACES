@@ -128,6 +128,9 @@ public class Robot extends TimedRobot {
 
     // DOES THIS NEED TO BE GAURDED?  Can it be null?
     solenoid = new DoubleSolenoid(SOL_FORWARD_PCM_ID, SOL_REVERSE_PCM_ID);
+    if (solenoid != null) {
+      System.out.println("TEAM6957: Solenoid Instantiated.");
+    }
 
     // Turn on USB Camera (if present)
     cameraserver = CameraServer.getInstance();
@@ -179,18 +182,20 @@ public class Robot extends TimedRobot {
     m_hand_right.set(hand);
 
     // Buttons to control solenoid to push hatch covers
-    op_button_a = joystick_driver.getRawButton(BUTTON_A);
-    op_button_b = joystick_driver.getRawButton(BUTTON_B);
+    op_button_a = joystick_operator.getRawButton(BUTTON_A);
+    op_button_b = joystick_operator.getRawButton(BUTTON_B);
 
-    if (op_button_b) {
-      // PUSH has priority
-      solenoid.set(DoubleSolenoid.Value.kForward);
-    } else if (op_button_a) {
-      // Otherwise, see if we should pull.
-      solenoid.set(DoubleSolenoid.Value.kReverse);
-    } else {
-      // Otherwise, stop pressure to solenoid.
-      solenoid.set(DoubleSolenoid.Value.kOff);
+    if (solenoid != null) {
+      if (op_button_b) {
+        // PUSH has priority
+        solenoid.set(DoubleSolenoid.Value.kForward);
+      } else if (op_button_a) {
+        // Otherwise, see if we should pull.
+        solenoid.set(DoubleSolenoid.Value.kReverse);
+      } else {
+        // Otherwise, stop pressure to solenoid.
+        solenoid.set(DoubleSolenoid.Value.kOff);
+      }
     }
   }
 
