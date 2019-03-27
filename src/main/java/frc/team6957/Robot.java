@@ -197,8 +197,13 @@ public class Robot extends TimedRobot {
 
   // HELPER FUNCTION(S)
 
-  /** Deadband with the given percent.
-   * 
+  /** Deadband removal with the given percent.
+   *
+   * The Joy stick axis output is -1.0..1.0.   The value sent to the motor
+   * controllers is the same.   However, the joysticks wiggle some around
+   * 0, so we remove a small percentage around there so the motors don't
+   * 'jump' around while stationary.
+   *
    * @param value The floating point input value (-1.0 .... 1.0, range not checked)
    * @param deadband The deadband.
    * @return The value, except values between -deadband to +deadband are returned as 0.0.
