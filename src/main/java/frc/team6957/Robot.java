@@ -66,7 +66,7 @@ public class Robot extends TimedRobot {
   // Tyler = Operator; Curtis(sp?) = Drive
   // Tyler wants B to push the solenoid out, and A to pull it back in (SHOULD THAT BE AUTOMATIC?  TIMED AFTER RELEASE?)
 
-  private static int SOL_FORWARD_PCM_ID = 0;       
+  private static int SOL_FORWARD_PCM_ID = 0;
   private static int SOL_REVERSE_PCM_ID = 1;
 
   // *** Variables ***
