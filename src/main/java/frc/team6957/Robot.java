@@ -25,6 +25,13 @@ public class Robot extends TimedRobot {
   private static final double DEADBAND_ARMS = 0.05;
   private static final double DEADBAND_HANDS = 0.05;
 
+  // ARM Scale Factor (multiplier for motor speed)
+  // < 1.0 == Slower
+  // = 1.0 == No change
+  // > 1.0 == Faster (limits range)
+  private static final double ARM_LARGE_SCALE = 0.60;
+  private static final double ARM_SMALL_SCALE = 0.50;
+
   // For XBox Joystick (Axis)
   private static final int LX_AXIS = 0;
   private static final int LY_AXIS = 1;
@@ -169,8 +176,8 @@ public class Robot extends TimedRobot {
     leftY = Deadband(joystick_operator.getY(), DEADBAND_ARMS);
     rightY = Deadband(joystick_operator.getRawAxis(RY_AXIS), DEADBAND_ARMS);
 
-    m_arm_large.set(leftY);
-    m_arm_small.set(rightY);
+    m_arm_large.set(leftY * ARM_LARGE_SCALE);
+    m_arm_small.set(rightY * ARM_SMALL_SCALE);
 
     // Hand control - Use the Operator Left and Right trigger.   They return
     // 0..1.   Blend them together for a value.
