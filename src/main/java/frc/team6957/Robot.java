@@ -225,11 +225,12 @@ public class Robot extends TimedRobot {
     //
 
     // Get Joystick positions and send to arm motors
-    leftY = Deadband(joystick_operator.getY(), DEADBAND_ARMS);
-    rightY = Deadband(joystick_operator.getRawAxis(RY_AXIS), DEADBAND_ARMS);
+    //TEMP leftY = Deadband(joystick_operator.getY(), DEADBAND_ARMS);
+    //TEMP rightY = Deadband(joystick_operator.getRawAxis(RY_AXIS), DEADBAND_ARMS);
 
-    m_arm_large.set(leftY * ARM_LARGE_SCALE);
-    m_arm_small.set(rightY * ARM_SMALL_SCALE);
+    //TEMP Arms disabled - motor issues.
+    //TEMP m_arm_large.set(leftY * ARM_LARGE_SCALE);
+    //TEMP m_arm_small.set(rightY * ARM_SMALL_SCALE);
 
     // Hand control - Use the Operator Left and Right trigger.   They return
     // 0..1.   Blend them together for a value.
