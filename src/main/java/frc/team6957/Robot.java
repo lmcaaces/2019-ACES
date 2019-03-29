@@ -7,6 +7,8 @@
 
 package frc.team6957;
 
+import java.lang.Math;
+
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -149,7 +151,7 @@ public class Robot extends TimedRobot {
     // Set up compressor.  Have it controlled with PCM Pressure Switch
     compressor = new Compressor(PCM_CAN_ID);
     if (compressor != null) {
-      // PCM Automatically turns on compressor when 'Pressure SW' is closed
+      // PCM Aut⌂omatically turns on compressor when 'Pressure SW' is closed
       compressor.setClosedLoopControl(true);
     } else {
       System.out.println("TEAM6957: Can't setup Compressor/PCM");
@@ -232,7 +234,7 @@ public class Robot extends TimedRobot {
     // Hand control - Use the Operator Left and Right trigger.   They return
     // 0..1.   Blend them together for a value.
     hand = joystick_operator.getRawAxis(L_TRIGGER) - joystick_operator.getRawAxis(R_TRIGGER);
-    hand = Deadband(hand, DEADBAND_HANDS);
+    hand = scale_hands(hand);
 
     // Operator Control Hands (Grab/Release balls)
     m_hand_left.set(hand);
@@ -280,5 +282,18 @@ public class Robot extends TimedRobot {
 
     /* Outside deadband */
     return 0;
+  }
+
+  /**
+   * Scale motor control for the hands.
+   * Flatten out control on the low end.
+   * 
+   * Expects input in range [0..1]
+   */
+  double scale_hands(double input)
+  {
+     return Deadband(
+        Math.pow(input, 2),
+        DEADBAND_HANDS);
   }
 }
