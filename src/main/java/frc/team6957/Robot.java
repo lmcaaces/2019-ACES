@@ -171,6 +171,11 @@ public class Robot extends TimedRobot {
   }
 
   @Override
+  public void autonomousPeriodic() {
+    teleopPeriodic();
+  }
+
+  @Override
   public void teleopPeriodic() {
     //
     // Driver Control
