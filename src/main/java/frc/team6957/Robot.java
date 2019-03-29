@@ -32,7 +32,7 @@ public class Robot extends TimedRobot {
   // > 1.0 == Faster (limits range)
   private static final double ARM_LARGE_SCALE = 0.60;
   private static final double ARM_SMALL_SCALE = 0.50;
-  private static final double DRIVE_SCALE = 0.70;
+  private static final double DRIVE_SCALE = 0.95;
 
   // For XBox Joystick (Axis)
   private static final int LX_AXIS = 0;
