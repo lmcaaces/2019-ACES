@@ -32,6 +32,7 @@ public class Robot extends TimedRobot {
   // > 1.0 == Faster (limits range)
   private static final double ARM_LARGE_SCALE = 0.60;
   private static final double ARM_SMALL_SCALE = 0.50;
+  private static final double DRIVE_SCALE = 0.70;
 
   // For XBox Joystick (Axis)
   private static final int LX_AXIS = 0;
@@ -166,9 +167,9 @@ public class Robot extends TimedRobot {
     //
 
     // Get Joystick positions
-    leftY = joystick_driver.getY();
-    leftX = joystick_driver.getX();
-    rightY = joystick_driver.getRawAxis(RY_AXIS);   // Only for Tank mode.
+    leftY = joystick_driver.getY() * DRIVE_SCALE;
+    leftX = joystick_driver.getX() * DRIVE_SCALE;
+    rightY = joystick_driver.getRawAxis(RY_AXIS) * DRIVE_SCALE;   // Only for Tank mode.
 
     if (TANK_DRIVE) {
       // NOTE: This uses leftStick and rightStick
