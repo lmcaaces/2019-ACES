@@ -8,6 +8,7 @@
 package frc.team6957;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
@@ -100,6 +101,7 @@ public class Robot extends TimedRobot {
   private double hand;
 
   // Push hatch covers
+  private Compressor compressor;
   private DoubleSolenoid solenoid;
 
   private boolean op_button_a;
@@ -132,6 +134,15 @@ public class Robot extends TimedRobot {
     m_hand_left = new Spark(HAND_LEFT_YEL);
     m_hand_right = new Spark(HAND_RIGHT_BRN);
     m_hand_right.setInverted(true);
+
+    // Set up compressor.  Have it controlled with PCM Pressure Switch
+    compressor = new Compressor(PCM_CAN_ID);
+    if (compressor != null) {
+      // PCM Automatically turns on compressor when 'Pressure SW' is closed
+      compressor.setClosedLoopControl(true);
+    } else {
+      System.out.println("TEAM6957: Can't setup Compressor/PCM");
+    }
 
     // DOES THIS NEED TO BE GAURDED?  Can it be null?
     solenoid = new DoubleSolenoid(SOL_FORWARD_PCM_ID, SOL_REVERSE_PCM_ID);
