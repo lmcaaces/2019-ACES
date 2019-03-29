@@ -45,6 +45,8 @@ public class Robot extends TimedRobot {
   // XBox Joystick (Buttons) - Just ones I need
   private static final int BUTTON_A = 1;
   private static final int BUTTON_B = 2;
+  private static final int BUTTON_BACK = 7;
+  private static final int BUTTON_START = 8;
 
   // There are PWM Control mapping constants
 
@@ -82,6 +84,11 @@ public class Robot extends TimedRobot {
   // TODO Have this be settable on the dashboard
   private boolean TANK_DRIVE = false;
 
+  // TODO: Make this an enum?
+  // When true, reverse the values of the joystick - so the driver
+  // can drive backwards (to place/get hatces) using forward controls.
+  private boolean drive_reversed = false;
+
   private DifferentialDrive m_drive;
   private SpeedControllerGroup m_right_speedgroup;
   private SpeedControllerGroup m_left_speedgroup;
@@ -107,6 +114,9 @@ public class Robot extends TimedRobot {
 
   private boolean op_button_a;
   private boolean op_button_b;
+
+  private boolean drv_button_reverse;
+  private boolean drv_button_check_drive; // Want this to rumble
 
   // USB Camera Server
   private CameraServer cameraserver;
@@ -170,6 +180,29 @@ public class Robot extends TimedRobot {
     leftY = joystick_driver.getY() * DRIVE_SCALE;
     leftX = joystick_driver.getX() * DRIVE_SCALE;
     rightY = joystick_driver.getRawAxis(RY_AXIS) * DRIVE_SCALE;   // Only for Tank mode.
+
+
+    drv_button_reverse = joystick_driver.getRawButton(BUTTON_BACK);
+    if (drv_button_reverse) {
+      drive_reversed = !drive_reversed;
+    }
+
+    drv_button_check_drive =  joystick_driver.getRawButton(BUTTON_START);
+    if (drv_button_check_drive) {
+      String drivetype;
+      if (drive_reversed) {
+        drivetype = "Reversed";
+      } else {
+        drivetype = "Normal";
+      }
+      System.out.println("TEAM6957: Drive " + drivetype);
+    }
+
+    if (drive_reversed) {
+      leftY = -leftY;
+      // leftX = -leftX;
+      rightY = -rightY;
+    }
 
     if (TANK_DRIVE) {
       // NOTE: This uses leftStick and rightStick
