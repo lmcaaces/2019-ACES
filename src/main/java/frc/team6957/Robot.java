@@ -214,10 +214,10 @@ public class Robot extends TimedRobot {
     if (TANK_DRIVE) {
       // NOTE: This uses leftStick and rightStick
       // QUESTION: How to make it use the right joystick controller on leftStick?
-      m_drive.tankDrive(leftY, rightY);
+      m_drive.tankDrive(scale_drive(leftY), scale_drive(rightY));
     } else {
       // NOTE: This uses only the leftStick
-      m_drive.arcadeDrive(leftY, leftX);
+      m_drive.arcadeDrive(scale_drive(leftY), scale_drive(leftX));
     }
 
     //
@@ -296,5 +296,11 @@ public class Robot extends TimedRobot {
      return Deadband(
         Math.pow(input, 2),
         DEADBAND_HANDS);
+  }
+
+  double scale_drive(double input)
+  {
+    // NOTE: do NOT change exponent to non-integer. Too much delay!
+    return Math.copySign(Math.pow(input, 2), input);
   }
 }
