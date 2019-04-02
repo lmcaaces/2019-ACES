@@ -7,16 +7,16 @@
 
 package frc.team6957;
 
-import java.lang.Math;
-
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 
 /**
  * Team 6957 - Basic Robot Control
@@ -34,20 +34,6 @@ public class Robot extends TimedRobot {
   // > 1.0 == Faster (limits range)
   private static final double ARM_LARGE_SCALE = 0.60;
   private static final double ARM_SMALL_SCALE = 0.50;
-
-  // For XBox Joystick (Axis)
-  private static final int LX_AXIS = 0;
-  private static final int LY_AXIS = 1;
-  private static final int L_TRIGGER = 2;
-  private static final int R_TRIGGER = 3;
-  private static final int RX_AXIS = 4;
-  private static final int RY_AXIS = 5;
-
-  // XBox Joystick (Buttons) - Just ones I need
-  private static final int BUTTON_A = 1;
-  private static final int BUTTON_B = 2;
-  private static final int BUTTON_BACK = 7;
-  private static final int BUTTON_START = 8;
 
   // There are PWM Control mapping constants
 
@@ -100,8 +86,8 @@ public class Robot extends TimedRobot {
   private Spark m_hand_left;
   private Spark m_hand_right;
 
-  private Joystick joystick_driver;
-  private Joystick joystick_operator;
+  private XboxController joystick_driver;
+  private XboxController joystick_operator;
 
   // Used for joystick positions
   private double leftX, leftY, rightY;
@@ -134,8 +120,8 @@ public class Robot extends TimedRobot {
       new Spark(MOTOR_LEFT_BACK_BLU)
       );
     m_drive = new DifferentialDrive(m_right_speedgroup, m_left_speedgroup);
-    joystick_driver = new Joystick(0);
-    joystick_operator = new Joystick(1);
+    joystick_driver = new XboxController(0);
+    joystick_operator = new XboxController(1);
 
     // Operator Arm Control
     m_arm_large = new Spark(MOTOR_ARM_LARGE_VIO);
@@ -183,17 +169,17 @@ public class Robot extends TimedRobot {
     //
 
     // Get Joystick positions
-    leftY = joystick_driver.getY();
-    leftX = joystick_driver.getX();
-    rightY = joystick_driver.getRawAxis(RY_AXIS);   // Only for Tank mode.
+    leftY = joystick_driver.getY(Hand.kLeft);
+    leftX = joystick_driver.getX(Hand.kLeft);
+    rightY = joystick_driver.getY(Hand.kRight);   // Only for Tank mode.
 
 
-    drv_button_reverse = joystick_driver.getRawButton(BUTTON_BACK);
+    drv_button_reverse = joystick_driver.getBackButtonReleased();
     if (drv_button_reverse) {
       drive_reversed = !drive_reversed;
     }
 
-    drv_button_check_drive =  joystick_driver.getRawButton(BUTTON_START);
+    drv_button_check_drive =  joystick_driver.getStartButton();
     if (drv_button_check_drive) {
       String drivetype;
       if (drive_reversed) {
@@ -224,8 +210,8 @@ public class Robot extends TimedRobot {
     //
 
     // Get Joystick positions and send to arm motors
-    //TEMP leftY = Deadband(joystick_operator.getY(), DEADBAND_ARMS);
-    //TEMP rightY = Deadband(joystick_operator.getRawAxis(RY_AXIS), DEADBAND_ARMS);
+    //TEMP leftY = Deadband(joystick_operator.getY(Hand.kLeft), DEADBAND_ARMS);
+    //TEMP rightY = Deadband(joystick_operator.getY(Hand.kRight), DEADBAND_ARMS);
 
     //TEMP Arms disabled - motor issues.
     //TEMP m_arm_large.set(leftY * ARM_LARGE_SCALE);
@@ -233,7 +219,7 @@ public class Robot extends TimedRobot {
 
     // Hand control - Use the Operator Left and Right trigger.   They return
     // 0..1.   Blend them together for a value.
-    hand = joystick_operator.getRawAxis(L_TRIGGER) - joystick_operator.getRawAxis(R_TRIGGER);
+    hand = joystick_operator.getTriggerAxis(Hand.kLeft) - joystick_operator.getTriggerAxis(Hand.kRight);
     hand = scale_hands(hand);
 
     // Operator Control Hands (Grab/Release balls)
@@ -241,8 +227,8 @@ public class Robot extends TimedRobot {
     m_hand_right.set(hand);
 
     // Buttons to control solenoid to push hatch covers
-    op_button_a = joystick_operator.getRawButton(BUTTON_A);
-    op_button_b = joystick_operator.getRawButton(BUTTON_B);
+    op_button_a = joystick_operator.getAButton();
+    op_button_b = joystick_operator.getBButton();
 
     if (solenoid != null) {
       if (op_button_b) {
