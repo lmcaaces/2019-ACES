@@ -73,22 +73,7 @@ def getISODate() {
 // NOTE: This goes into 'build/distributions/''
 // TODO: Generate Name in function, have cleanZip task that removes it!
 //       if the file exists, it is not overwritten.
-// TODO: Really need to ignore 'git ignored directories'
-// Better solution: clone to a temp area and zip that!
 task zip(type:Zip) {
   from(fileTree(dir: './', excludes: ['build/**', 'bin/**', '.gradle/**']))
   archiveName getISODate() + "-ACES.zip"
-}
-
-task veryclean(dependsOn: clean) {
-    // NOTE: Do not run from within VS Code!
-
-    // Gradle: .gradle/      NOTE: Can't do this from within Gradle
-    //delete "${rootDir}/.gradle"
-
-    // VS Code: .project .classpath .settings/ bin/
-    delete "${rootDir}/bin"
-    delete "${rootDir}/.settings"
-    delete "${rootDir}/.project"
-    delete "${rootDir}/.classpath"
 }
