@@ -148,6 +148,9 @@ public class Robot extends TimedRobot {
       System.out.println("TEAM6957: Solenoid NOT Instantiated.");
     }
 
+    // Configure Limelight Camera Mode
+    NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(1);
+
     // Turn on USB Camera (if present)
     cameraserver = CameraServer.getInstance();
     if (cameraserver != null) {
