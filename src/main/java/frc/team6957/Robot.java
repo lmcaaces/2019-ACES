@@ -34,7 +34,7 @@ public class Robot extends TimedRobot {
   // > 1.0 == Faster (limits range)
   private static final double ARM_LARGE_SCALE = 0.60;
   private static final double ARM_SMALL_SCALE = 0.50;
-  private static final double DRIVE_SCALE = 0.95;
+  private static final double DRIVE_SCALE = 1.00;
 
   // For XBox Joystick (Axis)
   private static final int LX_AXIS = 0;
@@ -214,10 +214,10 @@ public class Robot extends TimedRobot {
     if (TANK_DRIVE) {
       // NOTE: This uses leftStick and rightStick
       // QUESTION: How to make it use the right joystick controller on leftStick?
-      m_drive.tankDrive(scale_drive(leftY), scale_drive(rightY));
+      m_drive.tankDrive(leftY, rightY);
     } else {
       // NOTE: This uses only the leftStick
-      m_drive.arcadeDrive(scale_drive(leftY), scale_drive(leftX));
+      m_drive.arcadeDrive(leftY, leftX);
     }
 
     //
@@ -296,11 +296,5 @@ public class Robot extends TimedRobot {
      return Deadband(
         Math.pow(input, 2),
         DEADBAND_HANDS);
-  }
-
-  double scale_drive(double input)
-  {
-    // NOTE: do NOT change exponent to non-integer. Too much delay!
-    return Math.copySign(Math.pow(input, 2), input);
   }
 }
