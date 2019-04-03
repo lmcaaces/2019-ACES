@@ -26,7 +26,6 @@ public class Robot extends TimedRobot {
 
   // Deadband for ARM control
   private static final double DEADBAND_ARMS = 0.05;
-  private static final double DEADBAND_HANDS = 0.05;
 
   // ARM Scale Factor (multiplier for motor speed)
   // < 1.0 == Slower
@@ -49,10 +48,6 @@ public class Robot extends TimedRobot {
   // Control Arm Motors
   private static final int MOTOR_ARM_LARGE_VIO = 4;    // Violet(Purple)
   private static final int MOTOR_ARM_SMALL_WHT = 5;    // White
-
-  // Hand (Intake) Motors
-  private static final int HAND_LEFT_YEL = 6;          // Yellow
-  private static final int HAND_RIGHT_BRN = 7;         // Brown
 
   // CAN Controller IDs
   // Reference, not used
@@ -83,17 +78,11 @@ public class Robot extends TimedRobot {
   private Spark m_arm_large;
   private Spark m_arm_small;
 
-  private Spark m_hand_left;
-  private Spark m_hand_right;
-
   private XboxController joystick_driver;
   private XboxController joystick_operator;
 
   // Used for joystick positions
   private double leftX, leftY, rightY;
-
-  // Value sent to control hands
-  private double hand;
 
   // Push hatch covers
   private Compressor compressor;
@@ -127,11 +116,6 @@ public class Robot extends TimedRobot {
     m_arm_large = new Spark(MOTOR_ARM_LARGE_VIO);
     m_arm_large.setInverted(true);
     m_arm_small = new Spark(MOTOR_ARM_SMALL_WHT);
-
-    // Operator Hand Control
-    m_hand_left = new Spark(HAND_LEFT_YEL);
-    m_hand_right = new Spark(HAND_RIGHT_BRN);
-    m_hand_right.setInverted(true);
 
     // Set up compressor.  Have it controlled with PCM Pressure Switch
     compressor = new Compressor(PCM_CAN_ID);
@@ -220,15 +204,6 @@ public class Robot extends TimedRobot {
     //TEMP m_arm_large.set(leftY * ARM_LARGE_SCALE);
     //TEMP m_arm_small.set(rightY * ARM_SMALL_SCALE);
 
-    // Hand control - Use the Operator Left and Right trigger.   They return
-    // 0..1.   Blend them together for a value.
-    hand = joystick_operator.getTriggerAxis(Hand.kLeft) - joystick_operator.getTriggerAxis(Hand.kRight);
-    hand = scale_hands(hand);
-
-    // Operator Control Hands (Grab/Release balls)
-    m_hand_left.set(hand);
-    m_hand_right.set(hand);
-
     // Buttons to control solenoid to push hatch covers
     op_button_a = joystick_operator.getAButton();
     op_button_b = joystick_operator.getBButton();
@@ -271,18 +246,5 @@ public class Robot extends TimedRobot {
 
     /* Outside deadband */
     return 0;
-  }
-
-  /**
-   * Scale motor control for the hands.
-   * Flatten out control on the low end.
-   * 
-   * Expects input in range [0..1]
-   */
-  double scale_hands(double input)
-  {
-     return Deadband(
-        Math.pow(input, 2),
-        DEADBAND_HANDS);
   }
 }
