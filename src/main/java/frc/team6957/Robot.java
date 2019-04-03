@@ -182,7 +182,7 @@ public class Robot extends TimedRobot {
       drive_reversed = !drive_reversed;
     }
 
-    drv_button_check_drive =  joystick_driver.getStartButton();
+    drv_button_check_drive =  joystick_driver.getStartButtonReleased();
     if (drv_button_check_drive) {
       String drivetype;
       if (drive_reversed) {
