@@ -71,10 +71,10 @@ public class Robot extends TimedRobot {
   // TODO Have this be settable on the dashboard
   private boolean TANK_DRIVE = false;
 
-  // TODO: Make this an enum?
+  // TODO: Make this an enum.  Put it on the dashboard.
   // When true, reverse the values of the joystick - so the driver
   // can drive backwards (to place/get hatces) using forward controls.
-  private boolean drive_reversed = false;
+  private boolean drive_reversed = true;
 
   private DifferentialDrive m_drive;
   private SpeedControllerGroup m_right_speedgroup;
