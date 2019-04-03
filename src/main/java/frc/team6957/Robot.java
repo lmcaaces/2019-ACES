@@ -25,14 +25,13 @@ public class Robot extends TimedRobot {
   // *** Constants ***
 
   // Deadband for ARM control
-  private static final double DEADBAND_ARMS = 0.05;
+  private static final double DEADBAND_ARM = 0.05;
 
   // ARM Scale Factor (multiplier for motor speed)
   // < 1.0 == Slower
   // = 1.0 == No change
   // > 1.0 == Faster (limits range)
-  private static final double ARM_LARGE_SCALE = 0.60;
-  private static final double ARM_SMALL_SCALE = 0.50;
+  private static final double ARM_SCALE = 0.60;
 
   // There are PWM Control mapping constants
 
@@ -40,14 +39,15 @@ public class Robot extends TimedRobot {
   // The color corresponds to tape on the motor and control wire
   // NOTE: Each on of these motors has there own SPARK controller
 
-  private static final int MOTOR_RIGHT_BACK_RED = 0;   // Red
-  private static final int MOTOR_RIGHT_FRONT_GRN = 1;  // Green
-  private static final int MOTOR_LEFT_BACK_BLU = 2;    // Blue
-  private static final int MOTOR_LEFT_FRONT_ORG = 3;   // Orange
+  private static final int MOTOR_RIGHT_BACK_GRN = 0;   // Green
+  private static final int MOTOR_RIGHT_FRONT_BLU = 1;  // Blue
+  private static final int MOTOR_RIGHT_TOP_RED = 2;    // Red
+  private static final int MOTOR_LEFT_BACK_WHT = 3;    // White
+  private static final int MOTOR_LEFT_FRONT_VIO = 4;   // Violet(Purple)
+  private static final int MOTOR_LEFT_TOP_ORG = 5;     // Orange
 
-  // Control Arm Motors
-  private static final int MOTOR_ARM_LARGE_VIO = 4;    // Violet(Purple)
-  private static final int MOTOR_ARM_SMALL_WHT = 5;    // White
+  // Control Arm Motor
+  private static final int MOTOR_ARM_BRN = 6;          // Brown
 
   // CAN Controller IDs
   // Reference, not used
@@ -74,9 +74,7 @@ public class Robot extends TimedRobot {
   private DifferentialDrive m_drive;
   private SpeedControllerGroup m_right_speedgroup;
   private SpeedControllerGroup m_left_speedgroup;
-
-  private Spark m_arm_large;
-  private Spark m_arm_small;
+  private Spark m_arm;
 
   private XboxController joystick_driver;
   private XboxController joystick_operator;
@@ -101,21 +99,22 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Should most of this should be in teleopInit?
     m_right_speedgroup = new SpeedControllerGroup(
-      new Spark(MOTOR_RIGHT_FRONT_GRN),
-      new Spark(MOTOR_RIGHT_BACK_RED)
+      new Spark(MOTOR_RIGHT_FRONT_BLU),
+      new Spark(MOTOR_RIGHT_BACK_GRN),
+      new Spark(MOTOR_RIGHT_TOP_RED)
       );
     m_left_speedgroup = new SpeedControllerGroup(
-      new Spark(MOTOR_LEFT_FRONT_ORG),
-      new Spark(MOTOR_LEFT_BACK_BLU)
+      new Spark(MOTOR_LEFT_FRONT_VIO),
+      new Spark(MOTOR_LEFT_BACK_WHT),
+      new Spark(MOTOR_LEFT_TOP_ORG)
       );
     m_drive = new DifferentialDrive(m_right_speedgroup, m_left_speedgroup);
     joystick_driver = new XboxController(0);
     joystick_operator = new XboxController(1);
 
     // Operator Arm Control
-    m_arm_large = new Spark(MOTOR_ARM_LARGE_VIO);
-    m_arm_large.setInverted(true);
-    m_arm_small = new Spark(MOTOR_ARM_SMALL_WHT);
+    m_arm = new Spark(MOTOR_ARM_BRN);
+    m_arm.setInverted(true);
 
     // Set up compressor.  Have it controlled with PCM Pressure Switch
     compressor = new Compressor(PCM_CAN_ID);
@@ -197,12 +196,11 @@ public class Robot extends TimedRobot {
     //
 
     // Get Joystick positions and send to arm motors
-    //TEMP leftY = Deadband(joystick_operator.getY(Hand.kLeft), DEADBAND_ARMS);
-    //TEMP rightY = Deadband(joystick_operator.getY(Hand.kRight), DEADBAND_ARMS);
+    leftY = Deadband(joystick_operator.getY(Hand.kLeft), DEADBAND_ARM);
+    // rightY = Deadband(joystick_operator.getY(Hand.kRight), DEADBAND_ARM);
 
-    //TEMP Arms disabled - motor issues.
-    //TEMP m_arm_large.set(leftY * ARM_LARGE_SCALE);
-    //TEMP m_arm_small.set(rightY * ARM_SMALL_SCALE);
+    // Arm motor control (to lift front of robot)
+    m_arm.set(leftY * ARM_SCALE);
 
     // Buttons to control solenoid to push hatch covers
     op_button_a = joystick_operator.getAButton();
