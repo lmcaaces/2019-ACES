@@ -9,6 +9,8 @@ package frc.team6957;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -32,6 +34,10 @@ public class Robot extends TimedRobot {
   // = 1.0 == No change
   // > 1.0 == Faster (limits range)
   private static final double ARM_SCALE = 0.60;
+
+  // Drive Scaler Facter
+  private static final double DRIVE_SCALE = 0.7;
+  private static final double TURN_SCALE = 0.5;
 
   // There are PWM Control mapping constants
 
@@ -89,6 +95,7 @@ public class Robot extends TimedRobot {
   private boolean op_button_a;
   private boolean op_button_b;
 
+  private boolean drv_button_auto;
   private boolean drv_button_reverse;
   private boolean drv_button_check_drive; // Want this to rumble
 
@@ -119,7 +126,7 @@ public class Robot extends TimedRobot {
     // Set up compressor.  Have it controlled with PCM Pressure Switch
     compressor = new Compressor(PCM_CAN_ID);
     if (compressor != null) {
-      // PCM Aut⌂omatically turns on compressor when 'Pressure SW' is closed
+      // PCM Automatically turns on compressor when 'Pressure SW' is closed
       compressor.setClosedLoopControl(true);
     } else {
       System.out.println("TEAM6957: Can't setup Compressor/PCM");
@@ -133,7 +140,7 @@ public class Robot extends TimedRobot {
 
     // Configure Limelight Camera Mode
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(1);
-
+   
     // Turn on USB Camera (if present)
     cameraserver = CameraServer.getInstance();
     if (cameraserver != null) {
@@ -153,12 +160,64 @@ public class Robot extends TimedRobot {
     //
     // Driver Control
     //
-
+    NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(1);
     // Get Joystick positions
     leftY = joystick_driver.getY(Hand.kLeft);
     leftX = joystick_driver.getX(Hand.kLeft);
     rightY = joystick_driver.getY(Hand.kRight);   // Only for Tank mode.
 
+    if (joystick_driver.getXButton()) {
+      NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(0);
+      boolean targetFound = false;
+      while (joystick_driver.getXButton()) {
+        if (targetFound) m_drive.arcadeDrive(0.5, 0);
+        else if (NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0) < -5 && !targetFound) m_drive.arcadeDrive(0, -0.5);
+        else if (NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0) > 5 && !targetFound) m_drive.arcadeDrive(0, 0.5);
+        else targetFound = true;
+      }
+      NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(1);
+    }
+
+    while (joystick_driver.getAButton()) {
+      leftY = joystick_driver.getY(Hand.kLeft);
+      leftX = joystick_driver.getX(Hand.kLeft);
+      if (drive_reversed) {
+        leftY = -leftY;
+        // leftX = -leftX;
+        rightY = -rightY;
+      }
+      if (TANK_DRIVE) {
+        // NOTE: This uses leftStick and rightStick
+        // QUESTION: How to make it use the right joystick controller on leftStick?
+        m_drive.tankDrive(leftY * DRIVE_SCALE, rightY * TURN_SCALE);
+      } else {
+        // NOTE: This uses only the leftStick
+        m_drive.arcadeDrive(leftY * DRIVE_SCALE, leftX * TURN_SCALE);
+      }
+      // Get Joystick positions and send to arm motors
+     leftY = Deadband(joystick_operator.getY(Hand.kLeft), DEADBAND_ARM);
+     // rightY = Deadband(joystick_operator.getY(Hand.kRight), DEADBAND_ARM);
+
+     // Arm motor control (to lift front of robot)
+      m_arm.set(leftY * ARM_SCALE);
+
+      // Buttons to control solenoid to push hatch covers
+     op_button_a = joystick_operator.getAButton();
+     op_button_b = joystick_operator.getBButton();
+
+      if (solenoid != null) {
+        if (op_button_b) {
+         // PUSH has priority
+         solenoid.set(DoubleSolenoid.Value.kForward);
+        } else if (op_button_a) {
+         // Otherwise, see if we should pull.
+         solenoid.set(DoubleSolenoid.Value.kReverse);
+        } else {
+         // Otherwise, stop pressure to solenoid.
+         solenoid.set(DoubleSolenoid.Value.kOff);
+       }
+      }
+    }
 
     drv_button_reverse = joystick_driver.getBackButtonReleased();
     if (drv_button_reverse) {
