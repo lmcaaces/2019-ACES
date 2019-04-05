@@ -38,6 +38,9 @@ public class Robot extends TimedRobot {
   private static final double ARM_SCALE = 0.60;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of 8a23e20... Added button option to slow robot down
+=======
 >>>>>>> parent of 8a23e20... Added button option to slow robot down
 =======
 >>>>>>> parent of 8a23e20... Added button option to slow robot down
@@ -143,8 +146,13 @@ public class Robot extends TimedRobot {
     // Configure Limelight Camera Mode
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     Limelight.setDriveMode();
    
+=======
+    NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(1);
+
+>>>>>>> parent of 8a23e20... Added button option to slow robot down
 =======
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(1);
 
@@ -178,6 +186,7 @@ public class Robot extends TimedRobot {
     leftX = joystick_driver.getX(Hand.kLeft);
     rightY = joystick_driver.getY(Hand.kRight);   // Only for Tank mode.
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     // Switches the limelight to track and advances toward target.
@@ -236,6 +245,8 @@ public class Robot extends TimedRobot {
         }
       }
     }
+=======
+>>>>>>> parent of 8a23e20... Added button option to slow robot down
 =======
 >>>>>>> parent of 8a23e20... Added button option to slow robot down
 =======
