@@ -25,7 +25,7 @@ public final class Limelight {
      * @return Returns a double value that is the offest of the target (+ or - 26)
      */
     public double getXOffset() {
-        NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0)
+        return NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
     }
 
 
