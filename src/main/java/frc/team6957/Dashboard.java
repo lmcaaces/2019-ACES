@@ -1,3 +1,21 @@
+// ***Dashboard class***
+// Makes it simpler to display and get values
+// from the SmartDashboard
+
+// INSTRUCTIONS FOR SMARTDASHBOARD:
+// In order to change the constants, go to
+// View -> Add -> Robot Preferences
+// Then add each robot preference by
+// entering the string name, the data type,
+// and the data to enter
+
+// ROBOT PREFERENCE LIST:
+// Tank Drive
+// Arm Scale
+// Drive Scale
+// Turn Scale
+// Deadband Arm
+
 package frc.team6957;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;;
