@@ -9,8 +9,6 @@ package frc.team6957;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -28,6 +26,18 @@ import frc.team6957.Dashboard;
 public class Robot extends TimedRobot {
   // *** Constants ***
 
+<<<<<<< HEAD
+=======
+  // Deadband for ARM control
+  private static final double DEADBAND_ARM = 0.05;
+
+  // ARM Scale Factor (multiplier for motor speed)
+  // < 1.0 == Slower
+  // = 1.0 == No change
+  // > 1.0 == Faster (limits range)
+  private static final double ARM_SCALE = 0.60;
+
+>>>>>>> parent of 8a23e20... Added button option to slow robot down
   // There are PWM Control mapping constants
 
   // Drive Train Motors
@@ -115,7 +125,7 @@ public class Robot extends TimedRobot {
     // Set up compressor.  Have it controlled with PCM Pressure Switch
     compressor = new Compressor(PCM_CAN_ID);
     if (compressor != null) {
-      // PCM Automatically turns on compressor when 'Pressure SW' is closed
+      // PCM Aut⌂omatically turns on compressor when 'Pressure SW' is closed
       compressor.setClosedLoopControl(true);
     } else {
       dash.error("Can't setup Compressor/PCM");
@@ -128,8 +138,13 @@ public class Robot extends TimedRobot {
     }
 
     // Configure Limelight Camera Mode
+<<<<<<< HEAD
     Limelight.setDriveMode();
    
+=======
+    NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(1);
+
+>>>>>>> parent of 8a23e20... Added button option to slow robot down
     // Turn on USB Camera (if present)
     cameraserver = CameraServer.getInstance();
     if (cameraserver != null) {
@@ -155,6 +170,7 @@ public class Robot extends TimedRobot {
     leftX = joystick_driver.getX(Hand.kLeft);
     rightY = joystick_driver.getY(Hand.kRight);   // Only for Tank mode.
 
+<<<<<<< HEAD
     // Switches the limelight to track and advances toward target.
     if (joystick_driver.getXButton()) {
       Limelight.setTrackMode();
@@ -211,6 +227,8 @@ public class Robot extends TimedRobot {
         }
       }
     }
+=======
+>>>>>>> parent of 8a23e20... Added button option to slow robot down
 
     // Reverses the drivetrain direction if select button is pressed
     drv_button_reverse = joystick_driver.getBackButtonReleased();
