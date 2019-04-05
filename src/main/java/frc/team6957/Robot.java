@@ -37,6 +37,9 @@ public class Robot extends TimedRobot {
   // > 1.0 == Faster (limits range)
   private static final double ARM_SCALE = 0.60;
 
+<<<<<<< HEAD
+>>>>>>> parent of 8a23e20... Added button option to slow robot down
+=======
 >>>>>>> parent of 8a23e20... Added button option to slow robot down
   // There are PWM Control mapping constants
 
@@ -139,8 +142,13 @@ public class Robot extends TimedRobot {
 
     // Configure Limelight Camera Mode
 <<<<<<< HEAD
+<<<<<<< HEAD
     Limelight.setDriveMode();
    
+=======
+    NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(1);
+
+>>>>>>> parent of 8a23e20... Added button option to slow robot down
 =======
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(1);
 
@@ -170,6 +178,7 @@ public class Robot extends TimedRobot {
     leftX = joystick_driver.getX(Hand.kLeft);
     rightY = joystick_driver.getY(Hand.kRight);   // Only for Tank mode.
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     // Switches the limelight to track and advances toward target.
     if (joystick_driver.getXButton()) {
@@ -227,6 +236,8 @@ public class Robot extends TimedRobot {
         }
       }
     }
+=======
+>>>>>>> parent of 8a23e20... Added button option to slow robot down
 =======
 >>>>>>> parent of 8a23e20... Added button option to slow robot down
 
