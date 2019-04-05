@@ -19,25 +19,14 @@ import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import frc.team6957.Limelight;
+import frc.team6957.Dashboard;
 
 /**
  * Team 6957 - Basic Robot Control
  */
 public class Robot extends TimedRobot {
   // *** Constants ***
-
-  // Deadband for ARM control
-  private static final double DEADBAND_ARM = 0.05;
-
-  // ARM Scale Factor (multiplier for motor speed)
-  // < 1.0 == Slower
-  // = 1.0 == No change
-  // > 1.0 == Faster (limits range)
-  private static final double ARM_SCALE = 0.60;
-
-  // Drive Scaler Facter
-  private static final double DRIVE_SCALE = 0.7;
-  private static final double TURN_SCALE = 0.5;
 
   // There are PWM Control mapping constants
 
@@ -95,13 +84,16 @@ public class Robot extends TimedRobot {
   private boolean op_button_a;
   private boolean op_button_b;
 
-  private boolean drv_button_auto;
   private boolean drv_button_reverse;
   private boolean drv_button_check_drive; // Want this to rumble
 
   // USB Camera Server
   private CameraServer cameraserver;
 
+  // Class Instances
+  private Limelight Limelight;
+  private Dashboard dash;
+  
   @Override
   public void robotInit() {
     // Should most of this should be in teleopInit?
@@ -129,24 +121,24 @@ public class Robot extends TimedRobot {
       // PCM Automatically turns on compressor when 'Pressure SW' is closed
       compressor.setClosedLoopControl(true);
     } else {
-      System.out.println("TEAM6957: Can't setup Compressor/PCM");
+      dash.error("Can't setup Compressor/PCM");
     }
 
     // DOES THIS NEED TO BE GAURDED?  Can it be null?
     solenoid = new DoubleSolenoid(SOL_FORWARD_PCM_ID, SOL_REVERSE_PCM_ID);
     if (solenoid != null) {
-      System.out.println("TEAM6957: Solenoid NOT Instantiated.");
+      dash.error("Solenoid NOT Instantiated");
     }
 
     // Configure Limelight Camera Mode
-    NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(1);
+    Limelight.setDriveMode();
    
     // Turn on USB Camera (if present)
     cameraserver = CameraServer.getInstance();
     if (cameraserver != null) {
       cameraserver.startAutomaticCapture();
     } else {
-      System.out.println("TEAM6957: No Camera Found.");
+      dash.error("No Camera Found.");
     }
   }
 
@@ -160,24 +152,26 @@ public class Robot extends TimedRobot {
     //
     // Driver Control
     //
-    NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(1);
+
     // Get Joystick positions
     leftY = joystick_driver.getY(Hand.kLeft);
     leftX = joystick_driver.getX(Hand.kLeft);
     rightY = joystick_driver.getY(Hand.kRight);   // Only for Tank mode.
 
+    // Switches the limelight to track and advances toward target.
     if (joystick_driver.getXButton()) {
-      NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(0);
+      Limelight.setTrackMode();
       boolean targetFound = false;
       while (joystick_driver.getXButton()) {
         if (targetFound) m_drive.arcadeDrive(0.5, 0);
-        else if (NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0) < -5 && !targetFound) m_drive.arcadeDrive(0, -0.5);
-        else if (NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0) > 5 && !targetFound) m_drive.arcadeDrive(0, 0.5);
+        else if (Limelight.getXOffset() < -5 && !targetFound) m_drive.arcadeDrive(0, -0.5);
+        else if (Limelight.getXOffset() > 5 && !targetFound) m_drive.arcadeDrive(0, 0.5);
         else targetFound = true;
       }
-      NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(1);
+      Limelight.setDriveMode();
     }
 
+    // Limits max speed of robot while A butten is pressed
     while (joystick_driver.getAButton()) {
       leftY = joystick_driver.getY(Hand.kLeft);
       leftX = joystick_driver.getX(Hand.kLeft);
@@ -186,24 +180,26 @@ public class Robot extends TimedRobot {
         // leftX = -leftX;
         rightY = -rightY;
       }
-      if (TANK_DRIVE) {
+      if (dash.getTankDrive()) {
         // NOTE: This uses leftStick and rightStick
         // QUESTION: How to make it use the right joystick controller on leftStick?
-        m_drive.tankDrive(leftY * DRIVE_SCALE, rightY * TURN_SCALE);
+        m_drive.tankDrive(leftY * dash.getDriveScale(),
+                          rightY * dash.getTurnScale());
       } else {
         // NOTE: This uses only the leftStick
-        m_drive.arcadeDrive(leftY * DRIVE_SCALE, leftX * TURN_SCALE);
+        m_drive.arcadeDrive(leftY * dash.getDriveScale(),
+                            leftX * dash.getDriveScale());
       }
       // Get Joystick positions and send to arm motors
-     leftY = Deadband(joystick_operator.getY(Hand.kLeft), DEADBAND_ARM);
+     leftY = Deadband(joystick_operator.getY(Hand.kLeft), dash.getDeadbandArm());
      // rightY = Deadband(joystick_operator.getY(Hand.kRight), DEADBAND_ARM);
 
      // Arm motor control (to lift front of robot)
-      m_arm.set(leftY * ARM_SCALE);
+      m_arm.set(leftY * dash.getArmScale());
 
       // Buttons to control solenoid to push hatch covers
-     op_button_a = joystick_operator.getAButton();
-     op_button_b = joystick_operator.getBButton();
+      op_button_a = joystick_operator.getAButton();
+      op_button_b = joystick_operator.getBButton();
 
       if (solenoid != null) {
         if (op_button_b) {
@@ -215,15 +211,17 @@ public class Robot extends TimedRobot {
         } else {
          // Otherwise, stop pressure to solenoid.
          solenoid.set(DoubleSolenoid.Value.kOff);
-       }
+        }
       }
     }
 
+    // Reverses the drivetrain direction if select button is pressed
     drv_button_reverse = joystick_driver.getBackButtonReleased();
     if (drv_button_reverse) {
       drive_reversed = !drive_reversed;
     }
 
+    // Prints out current status of the direction of the drivetrain
     drv_button_check_drive =  joystick_driver.getStartButtonReleased();
     if (drv_button_check_drive) {
       String drivetype;
@@ -232,16 +230,18 @@ public class Robot extends TimedRobot {
       } else {
         drivetype = "Normal";
       }
-      System.out.println("TEAM6957: Drive " + drivetype);
+      dash.display("Drive Direction", drivetype);
     }
 
+    // Reverses X & Y values
     if (drive_reversed) {
       leftY = -leftY;
       // leftX = -leftX;
       rightY = -rightY;
     }
 
-    if (TANK_DRIVE) {
+    // Drives based on drive mode
+    if (dash.getTankDrive()) {
       // NOTE: This uses leftStick and rightStick
       // QUESTION: How to make it use the right joystick controller on leftStick?
       m_drive.tankDrive(leftY, rightY);
@@ -255,11 +255,11 @@ public class Robot extends TimedRobot {
     //
 
     // Get Joystick positions and send to arm motors
-    leftY = Deadband(joystick_operator.getY(Hand.kLeft), DEADBAND_ARM);
+    leftY = Deadband(joystick_operator.getY(Hand.kLeft), dash.getDeadbandArm());
     // rightY = Deadband(joystick_operator.getY(Hand.kRight), DEADBAND_ARM);
 
     // Arm motor control (to lift front of robot)
-    m_arm.set(leftY * ARM_SCALE);
+    m_arm.set(leftY * dash.getArmScale());
 
     // Buttons to control solenoid to push hatch covers
     op_button_a = joystick_operator.getAButton();
@@ -304,4 +304,5 @@ public class Robot extends TimedRobot {
     /* Outside deadband */
     return 0;
   }
+
 }
