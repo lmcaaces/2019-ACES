@@ -8,7 +8,6 @@
 package frc.team6957;
 
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -26,24 +25,11 @@ import frc.team6957.Dashboard;
 public class Robot extends TimedRobot {
   // *** Constants ***
 
-<<<<<<< HEAD
-=======
-  // Deadband for ARM control
-  private static final double DEADBAND_ARM = 0.05;
-
-  // ARM Scale Factor (multiplier for motor speed)
-  // < 1.0 == Slower
-  // = 1.0 == No change
-  // > 1.0 == Faster (limits range)
-  private static final double ARM_SCALE = 0.60;
-
->>>>>>> parent of 8a23e20... Added button option to slow robot down
-  // There are PWM Control mapping constants
-
-  // Drive Train Motors
+  // These are PWM Control mapping constants
   // The color corresponds to tape on the motor and control wire
   // NOTE: Each on of these motors has there own SPARK controller
 
+  // Drive Train Motors
   private static final int MOTOR_RIGHT_BACK_GRN = 0;   // Green
   private static final int MOTOR_RIGHT_FRONT_BLU = 1;  // Blue
   private static final int MOTOR_RIGHT_TOP_RED = 2;    // Red
@@ -62,13 +48,11 @@ public class Robot extends TimedRobot {
   // PCM Controller IDs
   // Tyler = Operator; Curtis(sp?) = Drive
   // Tyler wants B to push the solenoid out, and A to pull it back in (SHOULD THAT BE AUTOMATIC?  TIMED AFTER RELEASE?)
-
   private static int SOL_FORWARD_PCM_ID = 0;
   private static int SOL_REVERSE_PCM_ID = 1;
 
   // *** Variables ***
 
-  // TODO: Make this an enum.  Put it on the dashboard.
   // When true, reverse the values of the joystick - so the driver
   // can drive backwards (to place/get hatces) using forward controls.
   private boolean drive_reversed = true;
@@ -98,11 +82,16 @@ public class Robot extends TimedRobot {
   private CameraServer cameraserver;
 
   // Class Instances
-  private Limelight Limelight;
+  private Limelight limelight;
   private Dashboard dash;
-  
+
+  private boolean targetFound; // Used in limelight targeting
+
   @Override
   public void robotInit() {
+    limelight = new Limelight();
+    dash = new Dashboard();
+
     // Should most of this should be in teleopInit?
     m_right_speedgroup = new SpeedControllerGroup(
       new Spark(MOTOR_RIGHT_FRONT_BLU),
@@ -137,14 +126,8 @@ public class Robot extends TimedRobot {
       dash.error("Solenoid NOT Instantiated");
     }
 
-    // Configure Limelight Camera Mode
-<<<<<<< HEAD
-    Limelight.setDriveMode();
-   
-=======
-    NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(1);
+    limelight.setDriveMode();
 
->>>>>>> parent of 8a23e20... Added button option to slow robot down
     // Turn on USB Camera (if present)
     cameraserver = CameraServer.getInstance();
     if (cameraserver != null) {
@@ -170,18 +153,17 @@ public class Robot extends TimedRobot {
     leftX = joystick_driver.getX(Hand.kLeft);
     rightY = joystick_driver.getY(Hand.kRight);   // Only for Tank mode.
 
-<<<<<<< HEAD
     // Switches the limelight to track and advances toward target.
     if (joystick_driver.getXButton()) {
-      Limelight.setTrackMode();
-      boolean targetFound = false;
-      while (joystick_driver.getXButton()) {
+      limelight.setTrackMode();
+      targetFound = false;
+      while (!targetFound && joystick_driver.getXButton()) {
         if (targetFound) m_drive.arcadeDrive(0.5, 0);
-        else if (Limelight.getXOffset() < -5 && !targetFound) m_drive.arcadeDrive(0, -0.5);
-        else if (Limelight.getXOffset() > 5 && !targetFound) m_drive.arcadeDrive(0, 0.5);
+        else if (limelight.getXOffset() < -5 && !targetFound) m_drive.arcadeDrive(0, -0.5);
+        else if (limelight.getXOffset() > 5 && !targetFound) m_drive.arcadeDrive(0, 0.5);
         else targetFound = true;
       }
-      Limelight.setDriveMode();
+      limelight.setDriveMode();
     }
 
     // Limits max speed of robot while A butten is pressed
@@ -194,18 +176,16 @@ public class Robot extends TimedRobot {
         rightY = -rightY;
       }
       if (dash.getTankDrive()) {
-        // NOTE: This uses leftStick and rightStick
-        // QUESTION: How to make it use the right joystick controller on leftStick?
+        // Uses leftStick and rightStick
         m_drive.tankDrive(leftY * dash.getDriveScale(),
-                          rightY * dash.getTurnScale());
+                          rightY * dash.getDriveScale());
       } else {
-        // NOTE: This uses only the leftStick
+        // Uses only the leftStick
         m_drive.arcadeDrive(leftY * dash.getDriveScale(),
-                            leftX * dash.getDriveScale());
+                            leftX * dash.getTurnScale());
       }
       // Get Joystick positions and send to arm motors
      leftY = Deadband(joystick_operator.getY(Hand.kLeft), dash.getDeadbandArm());
-     // rightY = Deadband(joystick_operator.getY(Hand.kRight), DEADBAND_ARM);
 
      // Arm motor control (to lift front of robot)
       m_arm.set(leftY * dash.getArmScale());
@@ -227,8 +207,6 @@ public class Robot extends TimedRobot {
         }
       }
     }
-=======
->>>>>>> parent of 8a23e20... Added button option to slow robot down
 
     // Reverses the drivetrain direction if select button is pressed
     drv_button_reverse = joystick_driver.getBackButtonReleased();
@@ -239,13 +217,11 @@ public class Robot extends TimedRobot {
     // Prints out current status of the direction of the drivetrain
     drv_button_check_drive =  joystick_driver.getStartButtonReleased();
     if (drv_button_check_drive) {
-      String drivetype;
       if (drive_reversed) {
-        drivetype = "Reversed";
+        dash.display("Drive Direction", "Reversed");
       } else {
-        drivetype = "Normal";
+        dash.display("Drive Direction", "Normal");
       }
-      dash.display("Drive Direction", drivetype);
     }
 
     // Reverses X & Y values
