@@ -22,7 +22,8 @@ public final class Limelight {
 
     /**
      * Limelight Camera Mode Setting to Drive Mode.
-     * This switches the camera mode to a driver vision mode
+     * 
+     * Switch the camera to driver vision mode.
      */
     public void setDriveMode() {
         camMode.setNumber(1);
@@ -30,15 +31,17 @@ public final class Limelight {
 
     /**
      * Limelight Camera Mode Setting to Track Mode.
-     * This switches the camera mode to a tracking vision mode
+     * 
+     * Switch the camera mode to tracking vision mode.
      */
     public void setTrackMode() {
         camMode.setNumber(0);
-     }
+    }
 
     /**
-     * Limelight value accessor method
-     * @return Returns a double value that is the offest of the target (+ or - 26)
+     * Limelight value accessor method.
+     * 
+     * @return Returns a double value that is the offest of the target (+ or - 26).
      */
     public double getXOffset() {
         return tx.getDouble(0);

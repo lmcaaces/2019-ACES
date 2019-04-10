@@ -25,8 +25,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public final class Dashboard {
     // *** Constants ***
 
+    // TODO This is NOT an obvious place for global constants to live!
+
     // Scale Factors (multiplier for motor speed)
-    // < 1.0 == Slower;   = 1.0 == No change;  > 1.0 == Faster
+    // < 1.0 == Slower; = 1.0 == No change; > 1.0 == Faster
 
     private static final String TANK_DRIVE = "Tank Drive";
     private static final boolean DEFAULT_TANK_DRIVE = false;
@@ -43,12 +45,12 @@ public final class Dashboard {
     private static final String DEADBAND_ARM = "Deadband Arm";
     private static final double DEFAULT_DEADBAND_ARM = 0.05;
 
-    /** Dashboard Constructor.
+    /**
+     * Dashboard Constructor.
      *
      * Initialize all values to defaults from constants.
      */
-
-    public Dashboard () {
+    public Dashboard() {
         // Make sure we always start with our default values.
         SmartDashboard.putBoolean(TANK_DRIVE, DEFAULT_TANK_DRIVE);
         SmartDashboard.putNumber(ARM_SCALE, DEFAULT_ARM_SCALE);
@@ -59,13 +61,16 @@ public final class Dashboard {
         update(); // Is this needed?
     }
 
-    /** Updates all data for SmartDashboard */
+    /** 
+     * Updates all data for SmartDashboard.
+     */
     public void update() {
         SmartDashboard.updateValues();
     }
 
     /**
-     * Displays error mesage
+     * Displays error mesage.
+     * 
      * @param err String: Error to Display
      */
     public void error(String err) {
@@ -73,7 +78,8 @@ public final class Dashboard {
     }
 
     /**
-     * Displays general mesage
+     * Displays general mesage.
+     * 
      * @param msg String: Message to Display
      */
     public void message(String msg) {
@@ -81,7 +87,8 @@ public final class Dashboard {
     }
 
     /**
-     * Displays data to dashboard
+     * Displays data to dashboard.
+     * 
      * @param name String: display name of the data
      * @param data String: data to be displayed
      */
@@ -90,7 +97,8 @@ public final class Dashboard {
     }
 
     /**
-     * Displays data to dashboard
+     * Displays data to dashboard.
+     * 
      * @param name String: display name of the data
      * @param data double: data to be displayed
      */
@@ -99,7 +107,8 @@ public final class Dashboard {
     }
 
     /**
-     * Displays data to dashboard
+     * Displays data to dashboard.
+     * 
      * @param name String: display name of the data
      * @param data boolean: data to be displayed
      */
@@ -111,6 +120,7 @@ public final class Dashboard {
 
     /**
      * Get Arm Scale from Dashboard.
+     * 
      * @return double ARM_SCALE
      */
     public double getArmScale() {
@@ -119,6 +129,7 @@ public final class Dashboard {
 
     /**
      * Get Drive Scale (Arcade and Tank modes) from Dashbaord.
+     * 
      * @return double DRIVE_SCALE
      */
     public double getDriveScale() {
@@ -127,6 +138,7 @@ public final class Dashboard {
 
     /**
      * Get Turn Scale (Arcade mode only) from Dashboard.
+     * 
      * @return double DRIVE_SCALE
      */
     public double getTurnScale() {
@@ -135,6 +147,7 @@ public final class Dashboard {
 
     /**
      * Get Tank Drive (true/false) from Dashboard.
+     * 
      * @return boolean TANK_DRIVE
      */
     public boolean getTankDrive() {
@@ -143,6 +156,7 @@ public final class Dashboard {
 
     /**
      * Get Arm Deadband from Dashboard.
+     * 
      * @return double DEADBAND_ARM
      */
     public double getDeadbandArm() {

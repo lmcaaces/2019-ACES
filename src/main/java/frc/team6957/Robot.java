@@ -30,24 +30,25 @@ public class Robot extends TimedRobot {
   // NOTE: Each on of these motors has there own SPARK controller
 
   // Drive Train Motors
-  private static final int MOTOR_RIGHT_BACK_GRN = 0;   // Green
-  private static final int MOTOR_RIGHT_FRONT_BLU = 1;  // Blue
-  private static final int MOTOR_RIGHT_TOP_RED = 2;    // Red
-  private static final int MOTOR_LEFT_BACK_WHT = 3;    // White
-  private static final int MOTOR_LEFT_FRONT_VIO = 4;   // Violet(Purple)
-  private static final int MOTOR_LEFT_TOP_ORG = 5;     // Orange
+  private static final int MOTOR_RIGHT_BACK_GRN = 0; // Green
+  private static final int MOTOR_RIGHT_FRONT_BLU = 1; // Blue
+  private static final int MOTOR_RIGHT_TOP_RED = 2; // Red
+  private static final int MOTOR_LEFT_BACK_WHT = 3; // White
+  private static final int MOTOR_LEFT_FRONT_VIO = 4; // Violet(Purple)
+  private static final int MOTOR_LEFT_TOP_ORG = 5; // Orange
 
   // Control Arm Motor
-  private static final int MOTOR_ARM_BRN = 6;          // Brown
+  private static final int MOTOR_ARM_BRN = 6; // Brown
 
   // CAN Controller IDs
   // Reference, not used
-  // private static final int PDP_CAN_ID = 1;  // Power Distribution Panel
-  private static final int PCM_CAN_ID = 0;  // Pneumatic Control Module  (Assumed in Solenoid code!)
+  // private static final int PDP_CAN_ID = 1; // Power Distribution Panel
+  private static final int PCM_CAN_ID = 0; // Pneumatic Control Module (Assumed in Solenoid code!)
 
   // PCM Controller IDs
   // Tyler = Operator; Curtis(sp?) = Drive
-  // Tyler wants B to push the solenoid out, and A to pull it back in (SHOULD THAT BE AUTOMATIC?  TIMED AFTER RELEASE?)
+  // Tyler wants B to push the solenoid out, and A to pull it back in (SHOULD THAT
+  // BE AUTOMATIC? TIMED AFTER RELEASE?)
   private static int SOL_FORWARD_PCM_ID = 0;
   private static int SOL_REVERSE_PCM_ID = 1;
 
@@ -93,16 +94,10 @@ public class Robot extends TimedRobot {
     dash = new Dashboard();
 
     // Should most of this should be in teleopInit?
-    m_right_speedgroup = new SpeedControllerGroup(
-      new Spark(MOTOR_RIGHT_FRONT_BLU),
-      new Spark(MOTOR_RIGHT_BACK_GRN),
-      new Spark(MOTOR_RIGHT_TOP_RED)
-      );
-    m_left_speedgroup = new SpeedControllerGroup(
-      new Spark(MOTOR_LEFT_FRONT_VIO),
-      new Spark(MOTOR_LEFT_BACK_WHT),
-      new Spark(MOTOR_LEFT_TOP_ORG)
-      );
+    m_right_speedgroup = new SpeedControllerGroup(new Spark(MOTOR_RIGHT_FRONT_BLU), new Spark(MOTOR_RIGHT_BACK_GRN),
+        new Spark(MOTOR_RIGHT_TOP_RED));
+    m_left_speedgroup = new SpeedControllerGroup(new Spark(MOTOR_LEFT_FRONT_VIO), new Spark(MOTOR_LEFT_BACK_WHT),
+        new Spark(MOTOR_LEFT_TOP_ORG));
     m_drive = new DifferentialDrive(m_right_speedgroup, m_left_speedgroup);
     joystick_driver = new XboxController(0);
     joystick_operator = new XboxController(1);
@@ -111,7 +106,7 @@ public class Robot extends TimedRobot {
     m_arm = new Spark(MOTOR_ARM_BRN);
     m_arm.setInverted(true);
 
-    // Set up compressor.  Have it controlled with PCM Pressure Switch
+    // Set up compressor. Have it controlled with PCM Pressure Switch
     compressor = new Compressor(PCM_CAN_ID);
     if (compressor != null) {
       // PCM Aut⌂omatically turns on compressor when 'Pressure SW' is closed
@@ -120,7 +115,7 @@ public class Robot extends TimedRobot {
       dash.error("Can't setup Compressor/PCM");
     }
 
-    // DOES THIS NEED TO BE GAURDED?  Can it be null?
+    // DOES THIS NEED TO BE GAURDED? Can it be null?
     solenoid = new DoubleSolenoid(SOL_FORWARD_PCM_ID, SOL_REVERSE_PCM_ID);
     if (solenoid != null) {
       dash.error("Solenoid NOT Instantiated");
@@ -151,17 +146,21 @@ public class Robot extends TimedRobot {
     // Get Joystick positions
     leftY = joystick_driver.getY(Hand.kLeft);
     leftX = joystick_driver.getX(Hand.kLeft);
-    rightY = joystick_driver.getY(Hand.kRight);   // Only for Tank mode.
+    rightY = joystick_driver.getY(Hand.kRight); // Only for Tank mode.
 
     // Switches the limelight to track and advances toward target.
     if (joystick_driver.getXButton()) {
       limelight.setTrackMode();
       targetFound = false;
       while (!targetFound && joystick_driver.getXButton()) {
-        if (targetFound) m_drive.arcadeDrive(0.5, 0);
-        else if (limelight.getXOffset() < -5 && !targetFound) m_drive.arcadeDrive(0, -0.5);
-        else if (limelight.getXOffset() > 5 && !targetFound) m_drive.arcadeDrive(0, 0.5);
-        else targetFound = true;
+        if (targetFound)
+          m_drive.arcadeDrive(0.5, 0);
+        else if (limelight.getXOffset() < -5 && !targetFound)
+          m_drive.arcadeDrive(0, -0.5);
+        else if (limelight.getXOffset() > 5 && !targetFound)
+          m_drive.arcadeDrive(0, 0.5);
+        else
+          targetFound = true;
       }
       limelight.setDriveMode();
     }
@@ -177,17 +176,15 @@ public class Robot extends TimedRobot {
       }
       if (dash.getTankDrive()) {
         // Uses leftStick and rightStick
-        m_drive.tankDrive(leftY * dash.getDriveScale(),
-                          rightY * dash.getDriveScale());
+        m_drive.tankDrive(leftY * dash.getDriveScale(), rightY * dash.getDriveScale());
       } else {
         // Uses only the leftStick
-        m_drive.arcadeDrive(leftY * dash.getDriveScale(),
-                            leftX * dash.getTurnScale());
+        m_drive.arcadeDrive(leftY * dash.getDriveScale(), leftX * dash.getTurnScale());
       }
       // Get Joystick positions and send to arm motors
-     leftY = Deadband(joystick_operator.getY(Hand.kLeft), dash.getDeadbandArm());
+      leftY = Deadband(joystick_operator.getY(Hand.kLeft), dash.getDeadbandArm());
 
-     // Arm motor control (to lift front of robot)
+      // Arm motor control (to lift front of robot)
       m_arm.set(leftY * dash.getArmScale());
 
       // Buttons to control solenoid to push hatch covers
@@ -196,14 +193,14 @@ public class Robot extends TimedRobot {
 
       if (solenoid != null) {
         if (op_button_b) {
-         // PUSH has priority
-         solenoid.set(DoubleSolenoid.Value.kForward);
+          // PUSH has priority
+          solenoid.set(DoubleSolenoid.Value.kForward);
         } else if (op_button_a) {
-         // Otherwise, see if we should pull.
-         solenoid.set(DoubleSolenoid.Value.kReverse);
+          // Otherwise, see if we should pull.
+          solenoid.set(DoubleSolenoid.Value.kReverse);
         } else {
-         // Otherwise, stop pressure to solenoid.
-         solenoid.set(DoubleSolenoid.Value.kOff);
+          // Otherwise, stop pressure to solenoid.
+          solenoid.set(DoubleSolenoid.Value.kOff);
         }
       }
     }
@@ -215,7 +212,7 @@ public class Robot extends TimedRobot {
     }
 
     // Prints out current status of the direction of the drivetrain
-    drv_button_check_drive =  joystick_driver.getStartButtonReleased();
+    drv_button_check_drive = joystick_driver.getStartButtonReleased();
     if (drv_button_check_drive) {
       if (drive_reversed) {
         dash.display("Drive Direction", "Reversed");
@@ -272,16 +269,19 @@ public class Robot extends TimedRobot {
 
   // HELPER FUNCTION(S)
 
-  /** Deadband removal with the given percent.
+  /**
+   * Deadband removal with the given percent.
    *
-   * The Joy stick axis output is -1.0..1.0.   The value sent to the motor
-   * controllers is the same.   However, the joysticks wiggle some around
-   * 0, so we remove a small percentage around there so the motors don't
-   * 'jump' around while stationary.
+   * The Joy stick axis output is -1.0..1.0. The value sent to the motor
+   * controllers is the same. However, the joysticks wiggle some around 0, so we
+   * remove a small percentage around there so the motors don't 'jump' around
+   * while stationary.
    *
-   * @param value The floating point input value (-1.0 .... 1.0, range not checked)
+   * @param value    The floating point input value (-1.0 .... 1.0, range not
+   *                 checked)
    * @param deadband The deadband.
-   * @return The value, except values between -deadband to +deadband are returned as 0.0.
+   * @return The value, except values between -deadband to +deadband are returned
+   *         as 0.0.
    */
   double Deadband(double value, double deadband) {
     /* Upper deadband */
