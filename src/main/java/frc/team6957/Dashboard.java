@@ -1,22 +1,35 @@
-// ***Dashboard class***
-// Makes it simpler to display and get values
-// from the SmartDashboard
-
-// NOTE: These are old.  Defaults specified here are set
-//       At start up.   We can comment some out to change that!
-// INSTRUCTIONS FOR SMARTDASHBOARD:
-// In order to change the constants, go to
-// View -> Add -> Robot Preferences
-// Then add each robot preference by
-// entering the string name, the data type,
-// and the data to enter
-
-// ROBOT PREFERENCE LIST:
-// Tank Drive
-// Arm Scale
-// Drive Scale
-// Turn Scale
-// Deadband Arm
+/*
+ * Manage Dashboard data (including constants!).
+ * 
+ * Utility to help get and set values in the SmartDashboard.
+ *
+ * The constants in this class are set as the default value
+ * for those 'values' we store in the Dashboard.
+ * 
+ * To keep the value in the SmartDashboard, just comment out
+ * the put* operation in the Constructor.
+ * 
+ * There is probably a better way to do this.
+ * 
+ * <h2>Setting values in SmartDashboard</h2>
+ *
+ * To change the constants:
+ * <ul>
+ * <li>go to "View -&gt Add; -&gt; Robot Preferences"</li>
+ * <li>Add each robot preference by entering the string name, the data type,
+ * and the data to enter.</li>
+ * </ul>
+ *
+ * <h2>Robot Preferences</h2>
+ * 
+ * <ul>
+ * <li>Tank Drive - false (default) = Arcade Mode</li>
+ * <li>Arm Scale - motor scale for Arm [0.0 .. 1.0]</li>
+ * <li>Drive Scale - more scale for drive motors [0.0 .. 1.0]</li>
+ * <li>Turn Scale - motor scale for turns [0.0 .. 1.0] (Arcade Mode) only.</li>
+ * <li>Deadband Arm - deadband removal (around 0) for Arm motor control.</li>
+ * </ul>
+ */
 
 package frc.team6957;
 
