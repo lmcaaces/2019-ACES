@@ -8,7 +8,6 @@
 package frc.team6957;
 
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -30,6 +29,7 @@ public class Robot extends TimedRobot {
   // The color corresponds to tape on the motor and control wire
   // NOTE: Each on of these motors has there own SPARK controller
 
+  // Drive Train Motors
   private static final int MOTOR_RIGHT_BACK_GRN = 0;   // Green
   private static final int MOTOR_RIGHT_FRONT_BLU = 1;  // Blue
   private static final int MOTOR_RIGHT_TOP_RED = 2;    // Red
@@ -48,13 +48,11 @@ public class Robot extends TimedRobot {
   // PCM Controller IDs
   // Tyler = Operator; Curtis(sp?) = Drive
   // Tyler wants B to push the solenoid out, and A to pull it back in (SHOULD THAT BE AUTOMATIC?  TIMED AFTER RELEASE?)
-
   private static int SOL_FORWARD_PCM_ID = 0;
   private static int SOL_REVERSE_PCM_ID = 1;
 
   // *** Variables ***
 
-  // TODO: Make this an enum.  Put it on the dashboard.
   // When true, reverse the values of the joystick - so the driver
   // can drive backwards (to place/get hatces) using forward controls.
   private boolean drive_reversed = true;
@@ -219,13 +217,11 @@ public class Robot extends TimedRobot {
     // Prints out current status of the direction of the drivetrain
     drv_button_check_drive =  joystick_driver.getStartButtonReleased();
     if (drv_button_check_drive) {
-      String drivetype;
       if (drive_reversed) {
         dash.display("Drive Direction", "Reversed");
       } else {
         dash.display("Drive Direction", "Normal");
       }
-      dash.display("Drive Direction", drivetype);
     }
 
     // Reverses X & Y values
