@@ -231,7 +231,6 @@ public class Robot extends TimedRobot {
     // Drives based on drive mode
     if (dash.getTankDrive()) {
       // NOTE: This uses leftStick and rightStick
-      // QUESTION: How to make it use the right joystick controller on leftStick?
       m_drive.tankDrive(leftY, rightY);
     } else {
       // NOTE: This uses only the leftStick
@@ -295,5 +294,4 @@ public class Robot extends TimedRobot {
     /* Outside deadband */
     return 0;
   }
-
 }
